@@ -162,13 +162,6 @@ import { fingerTrainings } from "../data/fingerTrainings";
       aria-label="Type what you hear"
     />
 
-    <!-- Feedback message for incorrect words -->
-    <div class="feedback-msg" id="feedback-msg" hidden>
-      <span class="feedback-icon">✗</span>
-      <span class="feedback-text" id="feedback-text">Not quite. The word was: </span>
-      <span class="feedback-correct" id="feedback-correct"></span>
-    </div>
-
     <!-- Controls -->
     <div class="controls">
       <button class="btn btn-primary" id="btn-start">
@@ -254,6 +247,7 @@ import { fingerTrainings } from "../data/fingerTrainings";
   // ---- DOM Elements ----
   const hiddenInput = document.getElementById("hidden-input");
   const targetChars = document.getElementById("target-characters");
+  const typingDisplay = document.getElementById("typing-display");
   const cursorBlink = document.getElementById("cursor-blink");
   const speakIndicator = document.getElementById("speak-indicator");
   const speakLabel = document.getElementById("speak-label");
@@ -268,8 +262,6 @@ import { fingerTrainings } from "../data/fingerTrainings";
   const progressFill = document.getElementById("progress-fill");
   const wordReveal = document.getElementById("word-reveal");
   const revealWord = document.getElementById("reveal-word");
-  const feedbackMsg = document.getElementById("feedback-msg");
-  const feedbackCorrect = document.getElementById("feedback-correct");
   const levelBadge = document.getElementById("level-badge");
   const levelEmoji = document.getElementById("level-emoji");
   const levelDesc = document.getElementById("level-desc");
@@ -309,6 +301,7 @@ import { fingerTrainings } from "../data/fingerTrainings";
     currentWord: "",
     typedChars: [],
     isActive: false,
+    isAdvancing: false, // True during the wrong-word flash pause
     isSpeaking: false,
     wordRevealed: false,
     startTime: null,
@@ -406,6 +399,15 @@ import { fingerTrainings } from "../data/fingerTrainings";
     }
   }
 
+  let advanceTimeout = null;
+
+  function clearAdvance() {
+    if (advanceTimeout) {
+      clearTimeout(advanceTimeout);
+      advanceTimeout = null;
+    }
+  }
+
   function nextWord() {
     if (state.currentIndex >= state.wordOrder.length - 1) {
       endSession();
@@ -417,9 +419,6 @@ import { fingerTrainings } from "../data/fingerTrainings";
   }
 
   function loadCurrentWord() {
-    // Hide any lingering feedback from the previous word
-    hideFeedback();
-
     state.currentWord = state.wordOrder[state.currentIndex];
     state.typedChars = [];
     state.wordSettled = false;
@@ -443,6 +442,37 @@ import { fingerTrainings } from "../data/fingerTrainings";
         speakWord(state.currentWord);
       }, 300);
     }
+  }
+
+  // ---- Wrong Word Flash ----
+  function showWrongWordFlash(correctWord) {
+    state.isAdvancing = true;
+    cursorBlink.style.display = "none";
+
+    // Get all char elements and show the correct word
+    const chars = targetChars.querySelectorAll(".char");
+    chars.forEach((char, i) => {
+      // Show the correct character
+      char.textContent = correctWord[i] || "";
+      // Remove correct/incorrect/current classes and add flash
+      char.classList.remove("correct", "incorrect", "current");
+      char.classList.add("flash");
+    });
+
+    // Force reflow to restart CSS animations
+    void targetChars.offsetHeight;
+
+    // Add flash styling to the typing display
+    typingDisplay.classList.add("flash");
+
+    // After a brief pause, advance to the next word
+    advanceTimeout = setTimeout(() => {
+      typingDisplay.classList.remove("flash");
+      cursorBlink.style.display = "";
+      state.isAdvancing = false;
+      advanceTimeout = null;
+      nextWord();
+    }, 700);
   }
 
   // ---- Virtual Keyboard ----
@@ -484,34 +514,6 @@ import { fingerTrainings } from "../data/fingerTrainings";
     showWordLabel.textContent = "Show";
   }
 
-  // ---- Feedback Messages ----
-  let feedbackTimeout = null;
-
-  function showIncorrectFeedback(correctWord) {
-    // Clear any existing timeout
-    if (feedbackTimeout) clearTimeout(feedbackTimeout);
-
-    feedbackCorrect.textContent = correctWord;
-    feedbackMsg.hidden = false;
-    feedbackMsg.style.animation = "none";
-    // Re-trigger animation
-    void feedbackMsg.offsetHeight;
-    feedbackMsg.style.animation = "feedbackSlideIn 0.3s ease forwards";
-
-    // Auto-hide after 2 seconds
-    feedbackTimeout = setTimeout(() => {
-      hideFeedback();
-    }, 2000);
-  }
-
-  function hideFeedback() {
-    if (feedbackTimeout) {
-      clearTimeout(feedbackTimeout);
-      feedbackTimeout = null;
-    }
-    feedbackMsg.hidden = true;
-  }
-
   // ---- Per-Character Accuracy ----
   function countCurrentAccuracy() {
     let correct = 0;
@@ -536,6 +538,7 @@ import { fingerTrainings } from "../data/fingerTrainings";
       targetChars.appendChild(span);
     }
     cursorBlink.style.left = "0px";
+    cursorBlink.style.display = "";
   }
 
   function updateTyping() {
@@ -700,10 +703,12 @@ import { fingerTrainings } from "../data/fingerTrainings";
     };
     state.currentIndex = 0;
     state.isActive = true;
+    state.isAdvancing = false;
     state.wordSettled = false;
     summaryEl.hidden = true;
     progressFill.style.width = "0%";
     hideReveal();
+    clearAdvance();
 
     // Update UI
     btnStart.disabled = true;
@@ -731,6 +736,10 @@ import { fingerTrainings } from "../data/fingerTrainings";
   }
 
   function endSession() {
+    // Clear any pending advance timeout
+    clearAdvance();
+    state.isAdvancing = false;
+
     // Settle any remaining typed characters for the last word
     if (state.typedChars.length > 0) {
       settleCurrentWordStats();
@@ -765,13 +774,12 @@ import { fingerTrainings } from "../data/fingerTrainings";
   }
 
   function resetToStart() {
+    clearAdvance();
+    state.isAdvancing = false;
+
     if (state.timerInterval) {
       clearInterval(state.timerInterval);
       state.timerInterval = null;
-    }
-    if (feedbackTimeout) {
-      clearTimeout(feedbackTimeout);
-      feedbackTimeout = null;
     }
     window.speechSynthesis.cancel();
 
@@ -797,6 +805,8 @@ import { fingerTrainings } from "../data/fingerTrainings";
     statWords.textContent = "0";
     statStreak.textContent = "0";
     summaryEl.hidden = true;
+    cursorBlink.style.display = "";
+    typingDisplay.classList.remove("flash");
     hideReveal();
     btnStart.disabled = false;
     btnStart.innerHTML = `
@@ -818,8 +828,14 @@ import { fingerTrainings } from "../data/fingerTrainings";
 
   // ---- Input Handling ----
   function handleInput(e) {
+    // Block input during the wrong-word flash pause
+    if (!state.isActive || state.isAdvancing) {
+      e.preventDefault();
+      return;
+    }
+
     // In finger mode, allow typing even while speech is playing (word is visible)
-    if (!state.isActive || (state.isSpeaking && state.mode === "voice")) {
+    if (state.isSpeaking && state.mode === "voice") {
       e.preventDefault();
       return;
     }
@@ -851,20 +867,35 @@ import { fingerTrainings } from "../data/fingerTrainings";
         updateStats();
         nextWord();
       } else {
-        // Incorrect word — break streak, don't advance
+        // Incorrect word — break streak, show correct word flash, auto-advance
         state.stats.streak = 0;
-        // Show feedback with the correct word
-        showIncorrectFeedback(state.currentWord);
-        // Input is already clipped to word.length, user can backspace to fix
-        state.typedChars = input.value.split("");
-        updateTyping();
         updateStats();
+        showWrongWordFlash(state.currentWord);
       }
     }
   }
 
   function handleKeyDown(e) {
     if (!state.isActive) return;
+
+    // During the wrong-word flash pause, only allow Esc (skip) and Tab (restart)
+    if (state.isAdvancing) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        clearAdvance();
+        state.isAdvancing = false;
+        cursorBlink.style.display = "";
+        typingDisplay.classList.remove("flash");
+        // Advance immediately
+        nextWord();
+      } else if (e.key === "Tab") {
+        e.preventDefault();
+        resetToStart();
+      } else {
+        e.preventDefault();
+      }
+      return;
+    }
 
     if (e.key === " ") {
       e.preventDefault();
@@ -1300,12 +1331,25 @@ import { fingerTrainings } from "../data/fingerTrainings";
     border: 2px solid var(--border);
     border-radius: var(--radius);
     width: 100%;
-    transition: border-color var(--transition);
+    transition: border-color var(--transition), box-shadow var(--transition);
   }
 
   .typing-display:focus-within {
     border-color: var(--border-focus);
     box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  /* Red flash on wrong word */
+  .typing-display.flash {
+    border-color: var(--incorrect);
+    box-shadow: 0 0 20px rgba(255, 82, 82, 0.25), inset 0 0 30px rgba(255, 82, 82, 0.05);
+    animation: flashPulse 0.7s ease;
+  }
+
+  @keyframes flashPulse {
+    0%   { box-shadow: 0 0 0px rgba(255, 82, 82, 0); }
+    30%  { box-shadow: 0 0 30px rgba(255, 82, 82, 0.35), inset 0 0 40px rgba(255, 82, 82, 0.08); }
+    100% { box-shadow: 0 0 20px rgba(255, 82, 82, 0.25), inset 0 0 30px rgba(255, 82, 82, 0.05); }
   }
 
   .target-characters {
@@ -1346,15 +1390,23 @@ import { fingerTrainings } from "../data/fingerTrainings";
     animation: shake 0.3s ease;
   }
 
-  .cursor-blink {
-    position: absolute;
-    font-family: var(--font-mono);
-    font-size: 2rem;
-    font-weight: 300;
-    color: var(--accent);
-    animation: blink 1s step-end infinite;
-    pointer-events: none;
-    transition: left 0.1s ease;
+  /* Correct word flash after wrong guess */
+  .char.flash {
+    opacity: 1;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+    animation: flashFadeIn 0.25s ease forwards;
+  }
+
+  @keyframes flashFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   @keyframes blink {
@@ -1367,52 +1419,23 @@ import { fingerTrainings } from "../data/fingerTrainings";
     75% { transform: translateX(3px); }
   }
 
+  .cursor-blink {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+    pointer-events: none;
+    transition: left 0.1s ease;
+  }
+
   .hidden-input {
     position: absolute;
     opacity: 0;
     width: 1px;
     height: 1px;
     pointer-events: none;
-  }
-
-  /* ---- Feedback Message ---- */
-  .feedback-msg {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    background: rgba(255, 82, 82, 0.1);
-    border: 1px solid rgba(255, 82, 82, 0.3);
-    border-radius: var(--radius-sm);
-    font-size: 0.85rem;
-  }
-
-  .feedback-icon {
-    font-size: 1rem;
-    color: var(--incorrect);
-    font-weight: 700;
-  }
-
-  .feedback-text {
-    color: var(--text-secondary);
-  }
-
-  .feedback-correct {
-    font-family: var(--font-mono);
-    font-weight: 600;
-    color: var(--incorrect);
-    letter-spacing: 0.03em;
-  }
-
-  @keyframes feedbackSlideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   /* ---- Word Reveal ---- */
