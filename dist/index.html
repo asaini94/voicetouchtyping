@@ -1,0 +1,545 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>VoiceTouch — Voice-Prompted Typing Trainer</title><meta name="description" content="Train your touch typing skills with voice-prompted practice. Listen, type, and improve your speed and accuracy."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/_astro/index.eOLkKdWa.css"></head> <body> <div class="trainer-container" id="typing-trainer" data-astro-cid-goozqd4e> <!-- Header --> <header class="trainer-header" data-astro-cid-goozqd4e> <div class="logo" data-astro-cid-goozqd4e> <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" data-astro-cid-goozqd4e></path> <path d="M19 10v2a7 7 0 0 1-14 0v-2" data-astro-cid-goozqd4e></path> <line x1="12" y1="19" x2="12" y2="23" data-astro-cid-goozqd4e></line> <line x1="8" y1="23" x2="16" y2="23" data-astro-cid-goozqd4e></line> </svg> <span class="logo-text" data-astro-cid-goozqd4e>VoiceTouch</span> </div> <div class="header-controls" data-astro-cid-goozqd4e> <button class="btn btn-ghost" id="btn-show-word" disabled title="Show the current word visually" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" data-astro-cid-goozqd4e></path> <circle cx="12" cy="12" r="3" data-astro-cid-goozqd4e></circle> </svg> <span id="show-word-label" data-astro-cid-goozqd4e>Show</span> </button> <select class="difficulty-select" id="difficulty-select" aria-label="Select difficulty" data-astro-cid-goozqd4e> <option value="short-words" data-astro-cid-goozqd4e>Short Words</option><option value="medium-words" data-astro-cid-goozqd4e>Medium Words</option><option value="long-words" data-astro-cid-goozqd4e>Long Words</option><option value="phrases" data-astro-cid-goozqd4e>Phrases</option><option value="sentences" data-astro-cid-goozqd4e>Sentences</option> </select> </div> </header> <!-- Main Game Area --> <main class="game-area" data-astro-cid-goozqd4e> <!-- Status / Word Display --> <div class="speak-indicator" id="speak-indicator" data-astro-cid-goozqd4e> <div class="wave-bars" data-astro-cid-goozqd4e> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> </div> <span class="speak-label" id="speak-label" data-astro-cid-goozqd4e>Listening...</span> </div> <!-- Stats Bar --> <div class="stats-bar" data-astro-cid-goozqd4e> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-wpm" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>WPM</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-accuracy" data-astro-cid-goozqd4e>100%</span> <span class="stat-label" data-astro-cid-goozqd4e>Accuracy</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-time" data-astro-cid-goozqd4e>0:00</span> <span class="stat-label" data-astro-cid-goozqd4e>Time</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-words" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>Words</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-streak" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>Streak</span> </div> </div> <!-- Typing Display --> <div class="typing-display" id="typing-display" data-astro-cid-goozqd4e> <div class="target-characters" id="target-characters" data-astro-cid-goozqd4e></div> <div class="cursor-blink" id="cursor-blink" data-astro-cid-goozqd4e>|</div> </div> <!-- Revealed word (hidden by default) --> <div class="word-reveal" id="word-reveal" hidden data-astro-cid-goozqd4e> <span class="reveal-label" data-astro-cid-goozqd4e>Current word:</span> <span class="reveal-word" id="reveal-word" data-astro-cid-goozqd4e></span> </div> <!-- Hidden input for capturing keystrokes --> <input type="text" class="hidden-input" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type what you hear" data-astro-cid-goozqd4e> <!-- Controls --> <div class="controls" data-astro-cid-goozqd4e> <button class="btn btn-primary" id="btn-start" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" data-astro-cid-goozqd4e> <polygon points="5 3 19 12 5 21 5 3" data-astro-cid-goozqd4e></polygon> </svg>
+Start Practice
+</button> <button class="btn btn-secondary" id="btn-repeat" disabled data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <polyline points="1 4 1 10 7 10" data-astro-cid-goozqd4e></polyline> <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" data-astro-cid-goozqd4e></path> </svg>
+Repeat
+</button> <button class="btn btn-secondary" id="btn-restart" disabled data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <polyline points="23 4 23 10 17 10" data-astro-cid-goozqd4e></polyline> <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" data-astro-cid-goozqd4e></path> </svg>
+Restart
+</button> </div> <!-- Word Count Progress --> <div class="progress-bar" id="progress-bar" data-astro-cid-goozqd4e> <div class="progress-fill" id="progress-fill" data-astro-cid-goozqd4e></div> </div> <!-- Summary (shown after session) --> <div class="summary" id="summary" hidden data-astro-cid-goozqd4e> <h2 class="summary-title" data-astro-cid-goozqd4e>Session Complete!</h2> <div class="summary-stats" data-astro-cid-goozqd4e> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-wpm" data-astro-cid-goozqd4e>0</span> <span class="summary-label" data-astro-cid-goozqd4e>WPM</span> </div> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-accuracy" data-astro-cid-goozqd4e>0%</span> <span class="summary-label" data-astro-cid-goozqd4e>Accuracy</span> </div> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-words" data-astro-cid-goozqd4e>0</span> <span class="summary-label" data-astro-cid-goozqd4e>Words</span> </div> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-time" data-astro-cid-goozqd4e>0:00</span> <span class="summary-label" data-astro-cid-goozqd4e>Time</span> </div> </div> <button class="btn btn-primary" id="btn-summary-restart" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <polyline points="23 4 23 10 17 10" data-astro-cid-goozqd4e></polyline> <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" data-astro-cid-goozqd4e></path> </svg>
+Practice Again
+</button> </div> </main> <!-- Keyboard hint --> <footer class="trainer-footer" data-astro-cid-goozqd4e> <div class="hints" data-astro-cid-goozqd4e> <kbd data-astro-cid-goozqd4e>Space</kbd> Repeat word
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Esc</kbd> Skip word
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Tab</kbd> Restart
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>`</kbd> Reveal word
+</div> </footer> </div> <script>(function(){const wordBanks = [{"id":"short-words","label":"Short Words","description":"3–5 letter common words","words":["the","cat","dog","run","big","red","fun","map","sun","cup","fish","bird","tree","book","hand","fast","blue","cold","warm","soft","play","star","rain","door","bell","king","song","lake","hill","milk","jump","read","sing","walk","talk","give","take","make","come","help","wave","dust","gold","wind","rock","sand","moon","fire","snow","time","love","hope","calm","deep","bold","fair","kind","wild","tall","true"]},{"id":"medium-words","label":"Medium Words","description":"6–8 letter intermediate words","words":["morning","blanket","picture","garden","window","planet","silver","cotton","spring","winter","summer","autumn","candle","basket","helmet","rocket","purple","orange","yellow","forest","bridge","castle","dragon","flower","gentle","honest","kindly","bright","clever","golden","hidden","jumble","kitten","ladder","marble","number","puzzle","rabbit","saddle","turtle","violet","wiggle","zephyr","better","corner","dinner","frozen","goblin","hammer","insect","jungle","kettle","lemon","mirror","narrow","oxygen"]},{"id":"long-words","label":"Long Words","description":"9+ letter challenging words","words":["beautiful","development","education","environment","government","conference","experience","knowledge","community","challenge","opportunity","adventure","excellence","independent","literature","technology","university","resolution","celebration","difference","expression","foundation","generation","historical","impossible","leadership","management","navigation","obsession","phenomenon","philosophy","recognition","satisfaction","temperature","understanding","vegetable","yesterday","champion","dangerous","furniture"]},{"id":"phrases","label":"Phrases","description":"Common short phrases (2–3 words)","words":["hello world","good morning","thank you","have fun","well done","keep going","stay calm","be brave","nice work","all good","time flies","so cool","big dream","deep breath","bright idea","fast pace","fresh air","hard work","high five","long road","next step","open mind","quiet place","real deal","safe space","slow down","smart move","sweet spot","tough job","warm smile","wise choice","young soul","zen mode","pure joy","true love","kind heart","fair game","free time","great job","happy day"]},{"id":"sentences","label":"Sentences","description":"Full sentences for advanced practice","words":["The quick brown fox jumps over the lazy dog.","She sells seashells by the seashore.","How much wood would a woodchuck chuck?","The rain in Spain falls mainly on the plain.","Peter Piper picked a peck of pickled peppers.","A journey of a thousand miles begins with a single step.","To be or not to be that is the question.","All that glitters is not gold.","The early bird catches the worm.","Practice makes perfect.","Knowledge is power.","Time waits for no one.","The best time to plant a tree was twenty years ago.","In the middle of difficulty lies opportunity.","Life is what happens when you are busy making other plans.","The only way to do great work is to love what you do.","Simplicity is the ultimate sophistication.","Try not to become a man of success but a man of value.","The future belongs to those who believe in the beauty of their dreams.","It does not matter how slowly you go as long as you do not stop."]}];
+
+  // ---- DOM Elements ----
+  const hiddenInput = document.getElementById("hidden-input");
+  const targetChars = document.getElementById("target-characters");
+  const cursorBlink = document.getElementById("cursor-blink");
+  const speakIndicator = document.getElementById("speak-indicator");
+  const speakLabel = document.getElementById("speak-label");
+  const difficultySelect = document.getElementById("difficulty-select");
+  const btnStart = document.getElementById("btn-start");
+  const btnRepeat = document.getElementById("btn-repeat");
+  const btnRestart = document.getElementById("btn-restart");
+  const btnShowWord = document.getElementById("btn-show-word");
+  const showWordLabel = document.getElementById("show-word-label");
+  const btnSummaryRestart = document.getElementById("btn-summary-restart");
+  const summaryEl = document.getElementById("summary");
+  const progressFill = document.getElementById("progress-fill");
+  const wordReveal = document.getElementById("word-reveal");
+  const revealWord = document.getElementById("reveal-word");
+
+  // Stat elements
+  const statWpm = document.getElementById("stat-wpm");
+  const statAccuracy = document.getElementById("stat-accuracy");
+  const statTime = document.getElementById("stat-time");
+  const statWords = document.getElementById("stat-words");
+  const statStreak = document.getElementById("stat-streak");
+
+  // Summary stat elements
+  const summaryWpm = document.getElementById("summary-wpm");
+  const summaryAccuracy = document.getElementById("summary-accuracy");
+  const summaryWords = document.getElementById("summary-words");
+  const summaryTime = document.getElementById("summary-time");
+
+  // ---- State ----
+  const state = {
+    currentBank: [],
+    currentIndex: 0,
+    currentWord: "",
+    typedChars: [],
+    isActive: false,
+    isSpeaking: false,
+    wordRevealed: false,
+    startTime: null,
+    timerInterval: null,
+    // Per-character stats accumulated across ALL words
+    stats: {
+      correctChars: 0,
+      incorrectChars: 0,
+      totalCharsTyped: 0,
+      wordsCompleted: 0,
+      streak: 0,
+      bestStreak: 0,
+    },
+    // Track whether the current word's stats have been settled (prevents double-counting)
+    wordSettled: false,
+    wordOrder: [],
+    maxWords: 20,
+  };
+
+  // ---- Speech Synthesis ----
+  function speakWord(word) {
+    if (!window.speechSynthesis) {
+      speakLabel.textContent = "Speech not available";
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.rate = 0.85;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice =
+      voices.find((v) => v.lang.startsWith("en") && v.name.includes("Samantha")) ||
+      voices.find((v) => v.lang.startsWith("en") && v.name.includes("Google US")) ||
+      voices.find((v) => v.lang.startsWith("en")) ||
+      voices[0];
+    if (englishVoice) utterance.voice = englishVoice;
+
+    state.isSpeaking = true;
+    speakIndicator.classList.add("speaking");
+    speakLabel.textContent = "Speaking...";
+
+    utterance.onstart = () => {
+      speakIndicator.classList.add("speaking");
+      speakLabel.textContent = "Speaking...";
+    };
+
+    utterance.onend = () => {
+      state.isSpeaking = false;
+      speakIndicator.classList.remove("speaking");
+      speakLabel.textContent = "Your turn";
+      hiddenInput.focus();
+    };
+
+    utterance.onerror = () => {
+      state.isSpeaking = false;
+      speakIndicator.classList.remove("speaking");
+      speakLabel.textContent = "Error playing audio. Press Space to retry.";
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // ---- Word Management ----
+  function shuffleArray(arr) {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  function loadWordBank(bankId) {
+    const bank = wordBanks.find((b) => b.id === bankId) || wordBanks[0];
+    state.currentBank = shuffleArray(bank.words);
+    state.wordOrder = state.currentBank.slice(0, state.maxWords);
+    state.currentIndex = 0;
+  }
+
+  function nextWord() {
+    if (state.currentIndex >= state.wordOrder.length - 1) {
+      endSession();
+      return false;
+    }
+    state.currentIndex++;
+    loadCurrentWord();
+    return true;
+  }
+
+  function loadCurrentWord() {
+    state.currentWord = state.wordOrder[state.currentIndex];
+    state.typedChars = [];
+    state.wordSettled = false;
+    hideReveal();
+    renderTarget();
+    updateProgress();
+    hiddenInput.value = "";
+    updateStats();
+    // Set speaking state early to prevent typing during speech
+    setTimeout(() => {
+      speakWord(state.currentWord);
+    }, 300);
+  }
+
+  // ---- Word Reveal ----
+  function toggleReveal() {
+    if (!state.isActive) return;
+    state.wordRevealed = !state.wordRevealed;
+    if (state.wordRevealed) {
+      revealWord.textContent = state.currentWord;
+      wordReveal.hidden = false;
+      showWordLabel.textContent = "Hide";
+    } else {
+      hideReveal();
+    }
+  }
+
+  function hideReveal() {
+    state.wordRevealed = false;
+    wordReveal.hidden = true;
+    showWordLabel.textContent = "Show";
+  }
+
+  // ---- Per-Character Accuracy ----
+  function countCurrentAccuracy() {
+    let correct = 0;
+    for (let i = 0; i < state.typedChars.length; i++) {
+      if (state.typedChars[i] === state.currentWord[i]) {
+        correct++;
+      }
+    }
+    return { correct, total: state.typedChars.length };
+  }
+
+  // ---- Rendering ----
+  function renderTarget() {
+    const word = state.currentWord;
+    targetChars.innerHTML = "";
+    for (let i = 0; i < word.length; i++) {
+      const span = document.createElement("span");
+      span.className = "char";
+      span.dataset.index = i;
+      span.textContent = word[i];
+      span.style.animationDelay = `${i * 30}ms`;
+      targetChars.appendChild(span);
+    }
+    cursorBlink.style.left = "0px";
+  }
+
+  function updateTyping() {
+    const word = state.currentWord;
+    const chars = targetChars.querySelectorAll(".char");
+
+    chars.forEach((char, i) => {
+      char.classList.remove("correct", "incorrect", "current");
+      if (i < state.typedChars.length) {
+        if (state.typedChars[i] === word[i]) {
+          char.classList.add("correct");
+        } else {
+          char.classList.add("incorrect");
+        }
+      } else if (i === state.typedChars.length) {
+        char.classList.add("current");
+      }
+    });
+
+    // Position cursor using the current character's position
+    const currentChar = chars[state.typedChars.length];
+    if (currentChar) {
+      cursorBlink.style.left = `${currentChar.offsetLeft + currentChar.offsetWidth}px`;
+    } else if (chars.length > 0) {
+      cursorBlink.style.left = `${
+        chars[chars.length - 1].offsetLeft + chars[chars.length - 1].offsetWidth
+      }px`;
+    }
+  }
+
+  function updateStats() {
+    const s = state.stats;
+
+    // Calculate current word's per-character accuracy
+    const currentAcc = countCurrentAccuracy();
+
+    // Total correct/incorrect = completed stats + current word stats
+    const totalCorrect = s.correctChars + currentAcc.correct;
+    const totalTyped = s.totalCharsTyped + currentAcc.total;
+    const accuracy = totalTyped > 0 ? Math.round((totalCorrect / totalTyped) * 100) : 100;
+
+    statAccuracy.textContent = `${accuracy}%`;
+    statWords.textContent = s.wordsCompleted;
+    statStreak.textContent = s.streak;
+
+    // WPM calculation (based on correct chars / 5 / minutes)
+    if (state.startTime) {
+      const elapsed = (Date.now() - state.startTime) / 1000 / 60;
+      const grossWpm = elapsed > 0 ? Math.round((totalCorrect / 5) / elapsed) : 0;
+      statWpm.textContent = grossWpm;
+    }
+
+    // Time
+    if (state.startTime) {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      statTime.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+    }
+  }
+
+  function updateProgress() {
+    const pct = ((state.currentIndex + 1) / state.wordOrder.length) * 100;
+    progressFill.style.width = `${Math.min(pct, 100)}%`;
+  }
+
+  function showSummary() {
+    const s = state.stats;
+    const total = s.correctChars + s.incorrectChars;
+    const accuracy = total > 0 ? Math.round((s.correctChars / total) * 100) : 100;
+
+    if (state.startTime) {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      const elapsedMinutes = elapsed / 60;
+      const wpm = elapsedMinutes > 0 ? Math.round((s.correctChars / 5) / elapsedMinutes) : 0;
+
+      summaryWpm.textContent = wpm;
+      summaryAccuracy.textContent = `${accuracy}%`;
+      summaryWords.textContent = s.wordsCompleted;
+      summaryTime.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+    }
+
+    summaryEl.hidden = false;
+    summaryEl.style.animation = "slideUp 0.5s ease forwards";
+    summaryEl.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  // ---- Settle current word's stats into permanent totals ----
+  function settleCurrentWordStats() {
+    // Prevent double-counting if already settled for this word
+    if (state.wordSettled) return;
+    state.wordSettled = true;
+
+    // Count final per-character correctness for this word
+    let correct = 0;
+    let total = 0;
+    for (let i = 0; i < state.typedChars.length; i++) {
+      total++;
+      if (state.typedChars[i] === state.currentWord[i]) {
+        correct++;
+      }
+    }
+    state.stats.correctChars += correct;
+    state.stats.totalCharsTyped += total;
+    state.stats.incorrectChars += total - correct;
+    state.stats.wordsCompleted++;
+  }
+
+  // ---- Session Management ----
+  function startSession() {
+    state.stats = {
+      correctChars: 0,
+      incorrectChars: 0,
+      totalCharsTyped: 0,
+      wordsCompleted: 0,
+      streak: 0,
+      bestStreak: 0,
+    };
+    state.currentIndex = 0;
+    state.isActive = true;
+    state.wordSettled = false;
+    summaryEl.hidden = true;
+    progressFill.style.width = "0%";
+    hideReveal();
+
+    // Update UI
+    btnStart.disabled = true;
+    btnStart.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Practicing...
+    `;
+    btnRepeat.disabled = false;
+    btnRestart.disabled = false;
+    btnShowWord.disabled = false;
+    document.querySelector(".difficulty-select").disabled = true;
+
+    loadWordBank(difficultySelect.value);
+
+    state.startTime = Date.now();
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => updateStats(), 200);
+
+    loadCurrentWord();
+    updateStats();
+  }
+
+  function endSession() {
+    // Settle any remaining typed characters for the last word
+    if (state.typedChars.length > 0) {
+      settleCurrentWordStats();
+    }
+
+    state.isActive = false;
+    if (state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+    window.speechSynthesis.cancel();
+
+    btnStart.disabled = false;
+    btnStart.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Start Practice
+    `;
+    btnRepeat.disabled = true;
+    btnRestart.disabled = true;
+    btnShowWord.disabled = true;
+    document.querySelector(".difficulty-select").disabled = false;
+
+    speakIndicator.classList.remove("speaking");
+    speakLabel.textContent = "Session complete!";
+
+    showSummary();
+  }
+
+  function resetToStart() {
+    if (state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+    window.speechSynthesis.cancel();
+
+    state.isActive = false;
+    state.currentIndex = 0;
+    state.startTime = null;
+    state.stats = {
+      correctChars: 0,
+      incorrectChars: 0,
+      totalCharsTyped: 0,
+      wordsCompleted: 0,
+      streak: 0,
+      bestStreak: 0,
+    };
+    state.wordSettled = false;
+
+    targetChars.innerHTML = "";
+    hiddenInput.value = "";
+    progressFill.style.width = "0%";
+    statWpm.textContent = "0";
+    statAccuracy.textContent = "100%";
+    statTime.textContent = "0:00";
+    statWords.textContent = "0";
+    statStreak.textContent = "0";
+    summaryEl.hidden = true;
+    hideReveal();
+    btnStart.disabled = false;
+    btnStart.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Start Practice
+    `;
+    btnRepeat.disabled = true;
+    btnRestart.disabled = true;
+    btnShowWord.disabled = true;
+    document.querySelector(".difficulty-select").disabled = false;
+    speakLabel.textContent = "Press Start to begin";
+    speakIndicator.classList.remove("speaking");
+    hiddenInput.blur();
+  }
+
+  // ---- Input Handling ----
+  function handleInput(e) {
+    if (!state.isActive || state.isSpeaking) {
+      e.preventDefault();
+      return;
+    }
+
+    const input = hiddenInput;
+    const typed = input.value;
+
+    // If typed more than word length, clip it
+    if (typed.length > state.currentWord.length) {
+      input.value = typed.slice(0, state.currentWord.length);
+    }
+
+    state.typedChars = input.value.split("");
+
+    updateTyping();
+    updateStats();
+
+    // Check if word is complete
+    if (state.typedChars.length >= state.currentWord.length) {
+      // Settle the stats for this word (count correct vs incorrect chars)
+      settleCurrentWordStats();
+
+      const isCorrect = state.typedChars.join("") === state.currentWord;
+      if (isCorrect) {
+        state.stats.streak++;
+        if (state.stats.streak > state.stats.bestStreak) {
+          state.stats.bestStreak = state.stats.streak;
+        }
+        updateStats();
+        nextWord();
+      } else {
+        // Incorrect word — break streak, don't advance
+        state.stats.streak = 0;
+        // Input is already clipped to word.length, user can backspace to fix
+        state.typedChars = input.value.split("");
+        updateTyping();
+        updateStats();
+      }
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (!state.isActive) return;
+
+    if (e.key === " ") {
+      e.preventDefault();
+      repeatWord();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      skipWord();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      resetToStart();
+    } else if (e.key === "`" || e.key === "~") {
+      e.preventDefault();
+      toggleReveal();
+    }
+  }
+
+  function repeatWord() {
+    if (!state.isActive) return;
+    speakWord(state.currentWord);
+  }
+
+  function skipWord() {
+    if (!state.isActive) return;
+    // Settle stats before skipping
+    if (state.typedChars.length > 0) {
+      settleCurrentWordStats();
+    } else {
+      // Count as 0 correct, 0 typed — effectively skipping with no attempt
+      state.stats.wordsCompleted++;
+    }
+    state.stats.streak = 0;
+    updateStats();
+    nextWord();
+  }
+
+  // ---- Event Listeners ----
+  btnStart.addEventListener("click", startSession);
+  btnRepeat.addEventListener("click", repeatWord);
+  btnRestart.addEventListener("click", resetToStart);
+  btnSummaryRestart.addEventListener("click", startSession);
+  btnShowWord.addEventListener("click", toggleReveal);
+
+  hiddenInput.addEventListener("input", handleInput);
+  hiddenInput.addEventListener("keydown", handleKeyDown);
+
+  document.querySelector(".game-area").addEventListener("click", () => {
+    if (state.isActive && !state.isSpeaking) {
+      hiddenInput.focus();
+    }
+  });
+
+  difficultySelect.addEventListener("change", () => {
+    if (!state.isActive) {
+      loadWordBank(difficultySelect.value);
+    }
+  });
+
+  // Load voices on init
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
+  }
+
+  // Initialize
+  loadWordBank(difficultySelect.value);
+  speakLabel.textContent = "Press Start to begin";
+})();</script> </body></html>

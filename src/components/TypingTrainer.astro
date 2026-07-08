@@ -1,0 +1,1202 @@
+---
+import { wordBanks } from "../data/wordBanks";
+---
+
+<div class="trainer-container" id="typing-trainer">
+  <!-- Header -->
+  <header class="trainer-header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+        <line x1="12" y1="19" x2="12" y2="23" />
+        <line x1="8" y1="23" x2="16" y2="23" />
+      </svg>
+      <span class="logo-text">VoiceTouch</span>
+    </div>
+    <div class="header-controls">
+      <button class="btn btn-ghost" id="btn-show-word" disabled title="Show the current word visually">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <span id="show-word-label">Show</span>
+      </button>
+      <select class="difficulty-select" id="difficulty-select" aria-label="Select difficulty">
+        {wordBanks.map((bank) => (
+          <option value={bank.id}>{bank.label}</option>
+        ))}
+      </select>
+    </div>
+  </header>
+
+  <!-- Main Game Area -->
+  <main class="game-area">
+    <!-- Status / Word Display -->
+    <div class="speak-indicator" id="speak-indicator">
+      <div class="wave-bars">
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+      </div>
+      <span class="speak-label" id="speak-label">Listening...</span>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-value" id="stat-wpm">0</span>
+        <span class="stat-label">WPM</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value" id="stat-accuracy">100%</span>
+        <span class="stat-label">Accuracy</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value" id="stat-time">0:00</span>
+        <span class="stat-label">Time</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value" id="stat-words">0</span>
+        <span class="stat-label">Words</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-value" id="stat-streak">0</span>
+        <span class="stat-label">Streak</span>
+      </div>
+    </div>
+
+    <!-- Typing Display -->
+    <div class="typing-display" id="typing-display">
+      <div class="target-characters" id="target-characters"></div>
+      <div class="cursor-blink" id="cursor-blink">|</div>
+    </div>
+
+    <!-- Revealed word (hidden by default) -->
+    <div class="word-reveal" id="word-reveal" hidden>
+      <span class="reveal-label">Current word:</span>
+      <span class="reveal-word" id="reveal-word"></span>
+    </div>
+
+    <!-- Hidden input for capturing keystrokes -->
+    <input
+      type="text"
+      class="hidden-input"
+      id="hidden-input"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      aria-label="Type what you hear"
+    />
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn btn-primary" id="btn-start">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        Start Practice
+      </button>
+      <button class="btn btn-secondary" id="btn-repeat" disabled>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10" />
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+        </svg>
+        Repeat
+      </button>
+      <button class="btn btn-secondary" id="btn-restart" disabled>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
+        Restart
+      </button>
+    </div>
+
+    <!-- Word Count Progress -->
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Summary (shown after session) -->
+    <div class="summary" id="summary" hidden>
+      <h2 class="summary-title">Session Complete!</h2>
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <span class="summary-value" id="summary-wpm">0</span>
+          <span class="summary-label">WPM</span>
+        </div>
+        <div class="summary-stat">
+          <span class="summary-value" id="summary-accuracy">0%</span>
+          <span class="summary-label">Accuracy</span>
+        </div>
+        <div class="summary-stat">
+          <span class="summary-value" id="summary-words">0</span>
+          <span class="summary-label">Words</span>
+        </div>
+        <div class="summary-stat">
+          <span class="summary-value" id="summary-time">0:00</span>
+          <span class="summary-label">Time</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-summary-restart">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10" />
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+        </svg>
+        Practice Again
+      </button>
+    </div>
+  </main>
+
+  <!-- Keyboard hint -->
+  <footer class="trainer-footer">
+    <div class="hints">
+      <kbd>Space</kbd> Repeat word
+      <span class="hint-divider"></span>
+      <kbd>Esc</kbd> Skip word
+      <span class="hint-divider"></span>
+      <kbd>Tab</kbd> Restart
+      <span class="hint-divider"></span>
+      <kbd>`</kbd> Reveal word
+    </div>
+  </footer>
+</div>
+
+<script define:vars={{ wordBanks }}>
+  // ---- DOM Elements ----
+  const hiddenInput = document.getElementById("hidden-input");
+  const targetChars = document.getElementById("target-characters");
+  const cursorBlink = document.getElementById("cursor-blink");
+  const speakIndicator = document.getElementById("speak-indicator");
+  const speakLabel = document.getElementById("speak-label");
+  const difficultySelect = document.getElementById("difficulty-select");
+  const btnStart = document.getElementById("btn-start");
+  const btnRepeat = document.getElementById("btn-repeat");
+  const btnRestart = document.getElementById("btn-restart");
+  const btnShowWord = document.getElementById("btn-show-word");
+  const showWordLabel = document.getElementById("show-word-label");
+  const btnSummaryRestart = document.getElementById("btn-summary-restart");
+  const summaryEl = document.getElementById("summary");
+  const progressFill = document.getElementById("progress-fill");
+  const wordReveal = document.getElementById("word-reveal");
+  const revealWord = document.getElementById("reveal-word");
+
+  // Stat elements
+  const statWpm = document.getElementById("stat-wpm");
+  const statAccuracy = document.getElementById("stat-accuracy");
+  const statTime = document.getElementById("stat-time");
+  const statWords = document.getElementById("stat-words");
+  const statStreak = document.getElementById("stat-streak");
+
+  // Summary stat elements
+  const summaryWpm = document.getElementById("summary-wpm");
+  const summaryAccuracy = document.getElementById("summary-accuracy");
+  const summaryWords = document.getElementById("summary-words");
+  const summaryTime = document.getElementById("summary-time");
+
+  // ---- State ----
+  const state = {
+    currentBank: [],
+    currentIndex: 0,
+    currentWord: "",
+    typedChars: [],
+    isActive: false,
+    isSpeaking: false,
+    wordRevealed: false,
+    startTime: null,
+    timerInterval: null,
+    // Per-character stats accumulated across ALL words
+    stats: {
+      correctChars: 0,
+      incorrectChars: 0,
+      totalCharsTyped: 0,
+      wordsCompleted: 0,
+      streak: 0,
+      bestStreak: 0,
+    },
+    // Track whether the current word's stats have been settled (prevents double-counting)
+    wordSettled: false,
+    wordOrder: [],
+    maxWords: 20,
+  };
+
+  // ---- Speech Synthesis ----
+  function speakWord(word) {
+    if (!window.speechSynthesis) {
+      speakLabel.textContent = "Speech not available";
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.rate = 0.85;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice =
+      voices.find((v) => v.lang.startsWith("en") && v.name.includes("Samantha")) ||
+      voices.find((v) => v.lang.startsWith("en") && v.name.includes("Google US")) ||
+      voices.find((v) => v.lang.startsWith("en")) ||
+      voices[0];
+    if (englishVoice) utterance.voice = englishVoice;
+
+    state.isSpeaking = true;
+    speakIndicator.classList.add("speaking");
+    speakLabel.textContent = "Speaking...";
+
+    utterance.onstart = () => {
+      speakIndicator.classList.add("speaking");
+      speakLabel.textContent = "Speaking...";
+    };
+
+    utterance.onend = () => {
+      state.isSpeaking = false;
+      speakIndicator.classList.remove("speaking");
+      speakLabel.textContent = "Your turn";
+      hiddenInput.focus();
+    };
+
+    utterance.onerror = () => {
+      state.isSpeaking = false;
+      speakIndicator.classList.remove("speaking");
+      speakLabel.textContent = "Error playing audio. Press Space to retry.";
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // ---- Word Management ----
+  function shuffleArray(arr) {
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  function loadWordBank(bankId) {
+    const bank = wordBanks.find((b) => b.id === bankId) || wordBanks[0];
+    state.currentBank = shuffleArray(bank.words);
+    state.wordOrder = state.currentBank.slice(0, state.maxWords);
+    state.currentIndex = 0;
+  }
+
+  function nextWord() {
+    if (state.currentIndex >= state.wordOrder.length - 1) {
+      endSession();
+      return false;
+    }
+    state.currentIndex++;
+    loadCurrentWord();
+    return true;
+  }
+
+  function loadCurrentWord() {
+    state.currentWord = state.wordOrder[state.currentIndex];
+    state.typedChars = [];
+    state.wordSettled = false;
+    hideReveal();
+    renderTarget();
+    updateProgress();
+    hiddenInput.value = "";
+    updateStats();
+    // Set speaking state early to prevent typing during speech
+    setTimeout(() => {
+      speakWord(state.currentWord);
+    }, 300);
+  }
+
+  // ---- Word Reveal ----
+  function toggleReveal() {
+    if (!state.isActive) return;
+    state.wordRevealed = !state.wordRevealed;
+    if (state.wordRevealed) {
+      revealWord.textContent = state.currentWord;
+      wordReveal.hidden = false;
+      showWordLabel.textContent = "Hide";
+    } else {
+      hideReveal();
+    }
+  }
+
+  function hideReveal() {
+    state.wordRevealed = false;
+    wordReveal.hidden = true;
+    showWordLabel.textContent = "Show";
+  }
+
+  // ---- Per-Character Accuracy ----
+  function countCurrentAccuracy() {
+    let correct = 0;
+    for (let i = 0; i < state.typedChars.length; i++) {
+      if (state.typedChars[i] === state.currentWord[i]) {
+        correct++;
+      }
+    }
+    return { correct, total: state.typedChars.length };
+  }
+
+  // ---- Rendering ----
+  function renderTarget() {
+    const word = state.currentWord;
+    targetChars.innerHTML = "";
+    for (let i = 0; i < word.length; i++) {
+      const span = document.createElement("span");
+      span.className = "char";
+      span.dataset.index = i;
+      span.textContent = word[i];
+      span.style.animationDelay = `${i * 30}ms`;
+      targetChars.appendChild(span);
+    }
+    cursorBlink.style.left = "0px";
+  }
+
+  function updateTyping() {
+    const word = state.currentWord;
+    const chars = targetChars.querySelectorAll(".char");
+
+    chars.forEach((char, i) => {
+      char.classList.remove("correct", "incorrect", "current");
+      if (i < state.typedChars.length) {
+        if (state.typedChars[i] === word[i]) {
+          char.classList.add("correct");
+        } else {
+          char.classList.add("incorrect");
+        }
+      } else if (i === state.typedChars.length) {
+        char.classList.add("current");
+      }
+    });
+
+    // Position cursor using the current character's position
+    const currentChar = chars[state.typedChars.length];
+    if (currentChar) {
+      cursorBlink.style.left = `${currentChar.offsetLeft + currentChar.offsetWidth}px`;
+    } else if (chars.length > 0) {
+      cursorBlink.style.left = `${
+        chars[chars.length - 1].offsetLeft + chars[chars.length - 1].offsetWidth
+      }px`;
+    }
+  }
+
+  function updateStats() {
+    const s = state.stats;
+
+    // Calculate current word's per-character accuracy
+    const currentAcc = countCurrentAccuracy();
+
+    // Total correct/incorrect = completed stats + current word stats
+    const totalCorrect = s.correctChars + currentAcc.correct;
+    const totalTyped = s.totalCharsTyped + currentAcc.total;
+    const accuracy = totalTyped > 0 ? Math.round((totalCorrect / totalTyped) * 100) : 100;
+
+    statAccuracy.textContent = `${accuracy}%`;
+    statWords.textContent = s.wordsCompleted;
+    statStreak.textContent = s.streak;
+
+    // WPM calculation (based on correct chars / 5 / minutes)
+    if (state.startTime) {
+      const elapsed = (Date.now() - state.startTime) / 1000 / 60;
+      const grossWpm = elapsed > 0 ? Math.round((totalCorrect / 5) / elapsed) : 0;
+      statWpm.textContent = grossWpm;
+    }
+
+    // Time
+    if (state.startTime) {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      statTime.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+    }
+  }
+
+  function updateProgress() {
+    const pct = ((state.currentIndex + 1) / state.wordOrder.length) * 100;
+    progressFill.style.width = `${Math.min(pct, 100)}%`;
+  }
+
+  function showSummary() {
+    const s = state.stats;
+    const total = s.correctChars + s.incorrectChars;
+    const accuracy = total > 0 ? Math.round((s.correctChars / total) * 100) : 100;
+
+    if (state.startTime) {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      const elapsedMinutes = elapsed / 60;
+      const wpm = elapsedMinutes > 0 ? Math.round((s.correctChars / 5) / elapsedMinutes) : 0;
+
+      summaryWpm.textContent = wpm;
+      summaryAccuracy.textContent = `${accuracy}%`;
+      summaryWords.textContent = s.wordsCompleted;
+      summaryTime.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+    }
+
+    summaryEl.hidden = false;
+    summaryEl.style.animation = "slideUp 0.5s ease forwards";
+    summaryEl.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  // ---- Settle current word's stats into permanent totals ----
+  function settleCurrentWordStats() {
+    // Prevent double-counting if already settled for this word
+    if (state.wordSettled) return;
+    state.wordSettled = true;
+
+    // Count final per-character correctness for this word
+    let correct = 0;
+    let total = 0;
+    for (let i = 0; i < state.typedChars.length; i++) {
+      total++;
+      if (state.typedChars[i] === state.currentWord[i]) {
+        correct++;
+      }
+    }
+    state.stats.correctChars += correct;
+    state.stats.totalCharsTyped += total;
+    state.stats.incorrectChars += total - correct;
+    state.stats.wordsCompleted++;
+  }
+
+  // ---- Session Management ----
+  function startSession() {
+    state.stats = {
+      correctChars: 0,
+      incorrectChars: 0,
+      totalCharsTyped: 0,
+      wordsCompleted: 0,
+      streak: 0,
+      bestStreak: 0,
+    };
+    state.currentIndex = 0;
+    state.isActive = true;
+    state.wordSettled = false;
+    summaryEl.hidden = true;
+    progressFill.style.width = "0%";
+    hideReveal();
+
+    // Update UI
+    btnStart.disabled = true;
+    btnStart.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Practicing...
+    `;
+    btnRepeat.disabled = false;
+    btnRestart.disabled = false;
+    btnShowWord.disabled = false;
+    document.querySelector(".difficulty-select").disabled = true;
+
+    loadWordBank(difficultySelect.value);
+
+    state.startTime = Date.now();
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => updateStats(), 200);
+
+    loadCurrentWord();
+    updateStats();
+  }
+
+  function endSession() {
+    // Settle any remaining typed characters for the last word
+    if (state.typedChars.length > 0) {
+      settleCurrentWordStats();
+    }
+
+    state.isActive = false;
+    if (state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+    window.speechSynthesis.cancel();
+
+    btnStart.disabled = false;
+    btnStart.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Start Practice
+    `;
+    btnRepeat.disabled = true;
+    btnRestart.disabled = true;
+    btnShowWord.disabled = true;
+    document.querySelector(".difficulty-select").disabled = false;
+
+    speakIndicator.classList.remove("speaking");
+    speakLabel.textContent = "Session complete!";
+
+    showSummary();
+  }
+
+  function resetToStart() {
+    if (state.timerInterval) {
+      clearInterval(state.timerInterval);
+      state.timerInterval = null;
+    }
+    window.speechSynthesis.cancel();
+
+    state.isActive = false;
+    state.currentIndex = 0;
+    state.startTime = null;
+    state.stats = {
+      correctChars: 0,
+      incorrectChars: 0,
+      totalCharsTyped: 0,
+      wordsCompleted: 0,
+      streak: 0,
+      bestStreak: 0,
+    };
+    state.wordSettled = false;
+
+    targetChars.innerHTML = "";
+    hiddenInput.value = "";
+    progressFill.style.width = "0%";
+    statWpm.textContent = "0";
+    statAccuracy.textContent = "100%";
+    statTime.textContent = "0:00";
+    statWords.textContent = "0";
+    statStreak.textContent = "0";
+    summaryEl.hidden = true;
+    hideReveal();
+    btnStart.disabled = false;
+    btnStart.innerHTML = `
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Start Practice
+    `;
+    btnRepeat.disabled = true;
+    btnRestart.disabled = true;
+    btnShowWord.disabled = true;
+    document.querySelector(".difficulty-select").disabled = false;
+    speakLabel.textContent = "Press Start to begin";
+    speakIndicator.classList.remove("speaking");
+    hiddenInput.blur();
+  }
+
+  // ---- Input Handling ----
+  function handleInput(e) {
+    if (!state.isActive || state.isSpeaking) {
+      e.preventDefault();
+      return;
+    }
+
+    const input = hiddenInput;
+    const typed = input.value;
+
+    // If typed more than word length, clip it
+    if (typed.length > state.currentWord.length) {
+      input.value = typed.slice(0, state.currentWord.length);
+    }
+
+    state.typedChars = input.value.split("");
+
+    updateTyping();
+    updateStats();
+
+    // Check if word is complete
+    if (state.typedChars.length >= state.currentWord.length) {
+      // Settle the stats for this word (count correct vs incorrect chars)
+      settleCurrentWordStats();
+
+      const isCorrect = state.typedChars.join("") === state.currentWord;
+      if (isCorrect) {
+        state.stats.streak++;
+        if (state.stats.streak > state.stats.bestStreak) {
+          state.stats.bestStreak = state.stats.streak;
+        }
+        updateStats();
+        nextWord();
+      } else {
+        // Incorrect word — break streak, don't advance
+        state.stats.streak = 0;
+        // Input is already clipped to word.length, user can backspace to fix
+        state.typedChars = input.value.split("");
+        updateTyping();
+        updateStats();
+      }
+    }
+  }
+
+  function handleKeyDown(e) {
+    if (!state.isActive) return;
+
+    if (e.key === " ") {
+      e.preventDefault();
+      repeatWord();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      skipWord();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      resetToStart();
+    } else if (e.key === "`" || e.key === "~") {
+      e.preventDefault();
+      toggleReveal();
+    }
+  }
+
+  function repeatWord() {
+    if (!state.isActive) return;
+    speakWord(state.currentWord);
+  }
+
+  function skipWord() {
+    if (!state.isActive) return;
+    // Settle stats before skipping
+    if (state.typedChars.length > 0) {
+      settleCurrentWordStats();
+    } else {
+      // Count as 0 correct, 0 typed — effectively skipping with no attempt
+      state.stats.wordsCompleted++;
+    }
+    state.stats.streak = 0;
+    updateStats();
+    nextWord();
+  }
+
+  // ---- Event Listeners ----
+  btnStart.addEventListener("click", startSession);
+  btnRepeat.addEventListener("click", repeatWord);
+  btnRestart.addEventListener("click", resetToStart);
+  btnSummaryRestart.addEventListener("click", startSession);
+  btnShowWord.addEventListener("click", toggleReveal);
+
+  hiddenInput.addEventListener("input", handleInput);
+  hiddenInput.addEventListener("keydown", handleKeyDown);
+
+  document.querySelector(".game-area").addEventListener("click", () => {
+    if (state.isActive && !state.isSpeaking) {
+      hiddenInput.focus();
+    }
+  });
+
+  difficultySelect.addEventListener("change", () => {
+    if (!state.isActive) {
+      loadWordBank(difficultySelect.value);
+    }
+  });
+
+  // Load voices on init
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
+  }
+
+  // Initialize
+  loadWordBank(difficultySelect.value);
+  speakLabel.textContent = "Press Start to begin";
+</script>
+
+<style>
+  .trainer-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Header ---- */
+  .trainer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent);
+  }
+
+  .logo-text {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--accent-light);
+  }
+
+  .btn-ghost:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .difficulty-select {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: border-color var(--transition);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239090a8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  .difficulty-select:hover {
+    border-color: var(--accent);
+  }
+
+  .difficulty-select:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .difficulty-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ---- Game Area ---- */
+  .game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    animation: slideUp 0.5s ease;
+  }
+
+  /* ---- Speak Indicator ---- */
+  .speak-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    transition: all var(--transition);
+  }
+
+  .speak-indicator.speaking {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+    background: rgba(108, 92, 231, 0.1);
+  }
+
+  .wave-bars {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+  }
+
+  .wave-bar {
+    width: 3px;
+    background: var(--text-muted);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .speaking .wave-bar {
+    background: var(--accent);
+    animation: wave 0.6s ease infinite alternate;
+  }
+
+  .speaking .wave-bar:nth-child(1) { animation-delay: 0s; }
+  .speaking .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+  .speaking .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+  .speaking .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+  .speaking .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+  .speak-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .speaking .speak-label {
+    color: var(--accent-light);
+  }
+
+  /* ---- Stats Bar ---- */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 2rem;
+    background: var(--border);
+  }
+
+  /* ---- Typing Display ---- */
+  .typing-display {
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 2rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    transition: border-color var(--transition);
+  }
+
+  .typing-display:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .target-characters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+
+  .char {
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+    border-radius: 4px;
+    padding: 0 2px;
+    transition: all 0.15s ease;
+  }
+
+  .char.current {
+    opacity: 0.5;
+    color: var(--text-secondary);
+  }
+
+  .char.correct {
+    opacity: 1;
+    color: var(--correct);
+    text-shadow: 0 0 8px rgba(0, 230, 118, 0.3);
+  }
+
+  .char.incorrect {
+    opacity: 1;
+    color: var(--incorrect);
+    text-shadow: 0 0 8px rgba(255, 82, 82, 0.3);
+    animation: shake 0.3s ease;
+  }
+
+  .cursor-blink {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+    pointer-events: none;
+    transition: left 0.1s ease;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+  }
+
+  .hidden-input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  /* ---- Word Reveal ---- */
+  .word-reveal {
+    padding: 0.5rem 1rem;
+    background: rgba(108, 92, 231, 0.08);
+    border: 1px dashed var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .reveal-label {
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+  }
+
+  .reveal-word {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--accent-light);
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- Controls ---- */
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #5a4bd1);
+    color: white;
+    box-shadow: 0 4px 15px var(--accent-glow);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border-color: var(--border);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+  }
+
+  /* ---- Progress Bar ---- */
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* ---- Summary ---- */
+  .summary {
+    text-align: center;
+    padding: 2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  .summary-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--accent-light), var(--correct));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .summary-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .summary-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .summary-value {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .summary-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+
+  /* ---- Footer ---- */
+  .trainer-footer {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .hints {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.125rem 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .hint-divider {
+    width: 3px;
+    height: 3px;
+    background: var(--text-muted);
+    border-radius: 50%;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 600px) {
+    .trainer-container { padding: 1rem; }
+
+    .trainer-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .target-characters { font-size: 1.5rem; }
+    .cursor-blink { font-size: 1.5rem; }
+
+    .stats-bar { gap: 0.5rem; padding: 0.5rem 1rem; }
+    .stat-value { font-size: 0.875rem; }
+    .summary-stats { gap: 1rem; }
+  }
+</style>
