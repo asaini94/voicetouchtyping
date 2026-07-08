@@ -162,6 +162,13 @@ import { fingerTrainings } from "../data/fingerTrainings";
       aria-label="Type what you hear"
     />
 
+    <!-- Feedback message for incorrect words -->
+    <div class="feedback-msg" id="feedback-msg" hidden>
+      <span class="feedback-icon">✗</span>
+      <span class="feedback-text" id="feedback-text">Not quite. The word was: </span>
+      <span class="feedback-correct" id="feedback-correct"></span>
+    </div>
+
     <!-- Controls -->
     <div class="controls">
       <button class="btn btn-primary" id="btn-start">
@@ -261,6 +268,8 @@ import { fingerTrainings } from "../data/fingerTrainings";
   const progressFill = document.getElementById("progress-fill");
   const wordReveal = document.getElementById("word-reveal");
   const revealWord = document.getElementById("reveal-word");
+  const feedbackMsg = document.getElementById("feedback-msg");
+  const feedbackCorrect = document.getElementById("feedback-correct");
   const levelBadge = document.getElementById("level-badge");
   const levelEmoji = document.getElementById("level-emoji");
   const levelDesc = document.getElementById("level-desc");
@@ -408,6 +417,9 @@ import { fingerTrainings } from "../data/fingerTrainings";
   }
 
   function loadCurrentWord() {
+    // Hide any lingering feedback from the previous word
+    hideFeedback();
+
     state.currentWord = state.wordOrder[state.currentIndex];
     state.typedChars = [];
     state.wordSettled = false;
@@ -470,6 +482,34 @@ import { fingerTrainings } from "../data/fingerTrainings";
     state.wordRevealed = false;
     wordReveal.hidden = true;
     showWordLabel.textContent = "Show";
+  }
+
+  // ---- Feedback Messages ----
+  let feedbackTimeout = null;
+
+  function showIncorrectFeedback(correctWord) {
+    // Clear any existing timeout
+    if (feedbackTimeout) clearTimeout(feedbackTimeout);
+
+    feedbackCorrect.textContent = correctWord;
+    feedbackMsg.hidden = false;
+    feedbackMsg.style.animation = "none";
+    // Re-trigger animation
+    void feedbackMsg.offsetHeight;
+    feedbackMsg.style.animation = "feedbackSlideIn 0.3s ease forwards";
+
+    // Auto-hide after 2 seconds
+    feedbackTimeout = setTimeout(() => {
+      hideFeedback();
+    }, 2000);
+  }
+
+  function hideFeedback() {
+    if (feedbackTimeout) {
+      clearTimeout(feedbackTimeout);
+      feedbackTimeout = null;
+    }
+    feedbackMsg.hidden = true;
   }
 
   // ---- Per-Character Accuracy ----
@@ -729,6 +769,10 @@ import { fingerTrainings } from "../data/fingerTrainings";
       clearInterval(state.timerInterval);
       state.timerInterval = null;
     }
+    if (feedbackTimeout) {
+      clearTimeout(feedbackTimeout);
+      feedbackTimeout = null;
+    }
     window.speechSynthesis.cancel();
 
     state.isActive = false;
@@ -809,6 +853,8 @@ import { fingerTrainings } from "../data/fingerTrainings";
       } else {
         // Incorrect word — break streak, don't advance
         state.stats.streak = 0;
+        // Show feedback with the correct word
+        showIncorrectFeedback(state.currentWord);
         // Input is already clipped to word.length, user can backspace to fix
         state.typedChars = input.value.split("");
         updateTyping();
@@ -1327,6 +1373,46 @@ import { fingerTrainings } from "../data/fingerTrainings";
     width: 1px;
     height: 1px;
     pointer-events: none;
+  }
+
+  /* ---- Feedback Message ---- */
+  .feedback-msg {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255, 82, 82, 0.1);
+    border: 1px solid rgba(255, 82, 82, 0.3);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+  }
+
+  .feedback-icon {
+    font-size: 1rem;
+    color: var(--incorrect);
+    font-weight: 700;
+  }
+
+  .feedback-text {
+    color: var(--text-secondary);
+  }
+
+  .feedback-correct {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--incorrect);
+    letter-spacing: 0.03em;
+  }
+
+  @keyframes feedbackSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* ---- Word Reveal ---- */
