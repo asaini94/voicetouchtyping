@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>VoiceTouch — Voice-Prompted Typing Trainer</title><meta name="description" content="Train your touch typing skills with voice-prompted practice. Listen, type, and improve your speed and accuracy."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/_astro/index.eOLkKdWa.css"></head> <body> <div class="trainer-container" id="typing-trainer" data-astro-cid-goozqd4e> <!-- Header --> <header class="trainer-header" data-astro-cid-goozqd4e> <div class="logo" data-astro-cid-goozqd4e> <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" data-astro-cid-goozqd4e></path> <path d="M19 10v2a7 7 0 0 1-14 0v-2" data-astro-cid-goozqd4e></path> <line x1="12" y1="19" x2="12" y2="23" data-astro-cid-goozqd4e></line> <line x1="8" y1="23" x2="16" y2="23" data-astro-cid-goozqd4e></line> </svg> <span class="logo-text" data-astro-cid-goozqd4e>VoiceTouch</span> </div> <div class="header-controls" data-astro-cid-goozqd4e> <button class="btn btn-ghost" id="btn-show-word" disabled title="Show the current word visually" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" data-astro-cid-goozqd4e></path> <circle cx="12" cy="12" r="3" data-astro-cid-goozqd4e></circle> </svg> <span id="show-word-label" data-astro-cid-goozqd4e>Show</span> </button> <select class="difficulty-select" id="difficulty-select" aria-label="Select difficulty" data-astro-cid-goozqd4e> <option value="short-words" data-astro-cid-goozqd4e>Short Words</option><option value="medium-words" data-astro-cid-goozqd4e>Medium Words</option><option value="long-words" data-astro-cid-goozqd4e>Long Words</option><option value="phrases" data-astro-cid-goozqd4e>Phrases</option><option value="sentences" data-astro-cid-goozqd4e>Sentences</option> </select> </div> </header> <!-- Main Game Area --> <main class="game-area" data-astro-cid-goozqd4e> <!-- Status / Word Display --> <div class="speak-indicator" id="speak-indicator" data-astro-cid-goozqd4e> <div class="wave-bars" data-astro-cid-goozqd4e> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> </div> <span class="speak-label" id="speak-label" data-astro-cid-goozqd4e>Listening...</span> </div> <!-- Stats Bar --> <div class="stats-bar" data-astro-cid-goozqd4e> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-wpm" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>WPM</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-accuracy" data-astro-cid-goozqd4e>100%</span> <span class="stat-label" data-astro-cid-goozqd4e>Accuracy</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-time" data-astro-cid-goozqd4e>0:00</span> <span class="stat-label" data-astro-cid-goozqd4e>Time</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-words" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>Words</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-streak" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>Streak</span> </div> </div> <!-- Typing Display --> <div class="typing-display" id="typing-display" data-astro-cid-goozqd4e> <div class="target-characters" id="target-characters" data-astro-cid-goozqd4e></div> <div class="cursor-blink" id="cursor-blink" data-astro-cid-goozqd4e>|</div> </div> <!-- Revealed word (hidden by default) --> <div class="word-reveal" id="word-reveal" hidden data-astro-cid-goozqd4e> <span class="reveal-label" data-astro-cid-goozqd4e>Current word:</span> <span class="reveal-word" id="reveal-word" data-astro-cid-goozqd4e></span> </div> <!-- Hidden input for capturing keystrokes --> <input type="text" class="hidden-input" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type what you hear" data-astro-cid-goozqd4e> <!-- Controls --> <div class="controls" data-astro-cid-goozqd4e> <button class="btn btn-primary" id="btn-start" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" data-astro-cid-goozqd4e> <polygon points="5 3 19 12 5 21 5 3" data-astro-cid-goozqd4e></polygon> </svg>
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>VoiceTouch — Voice-Prompted Typing Trainer</title><meta name="description" content="Train your touch typing skills with voice-prompted practice. Listen, type, and improve your speed and accuracy."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/_astro/index.Cm4Pg4YP.css"></head> <body> <div class="trainer-container" id="typing-trainer" data-astro-cid-goozqd4e> <!-- Header --> <header class="trainer-header" data-astro-cid-goozqd4e> <div class="logo" data-astro-cid-goozqd4e> <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" data-astro-cid-goozqd4e></path> <path d="M19 10v2a7 7 0 0 1-14 0v-2" data-astro-cid-goozqd4e></path> <line x1="12" y1="19" x2="12" y2="23" data-astro-cid-goozqd4e></line> <line x1="8" y1="23" x2="16" y2="23" data-astro-cid-goozqd4e></line> </svg> <span class="logo-text" data-astro-cid-goozqd4e>VoiceTouch</span> </div> <div class="header-controls" data-astro-cid-goozqd4e> <!-- Mode Toggle --> <div class="mode-toggle" role="radiogroup" aria-label="Training mode" data-astro-cid-goozqd4e> <button class="mode-btn mode-active" id="mode-voice" role="radio" aria-checked="true" title="Voice-prompted typing" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" data-astro-cid-goozqd4e></path> <path d="M19 10v2a7 7 0 0 1-14 0v-2" data-astro-cid-goozqd4e></path> </svg> <span data-astro-cid-goozqd4e>Voice</span> </button> <button class="mode-btn" id="mode-fingers" role="radio" aria-checked="false" title="Finger-specific training" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M7 11V7a5 5 0 0 1 10 0v4" data-astro-cid-goozqd4e></path> <path d="M21 16v2a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-2" data-astro-cid-goozqd4e></path> </svg> <span data-astro-cid-goozqd4e>Fingers</span> </button> </div> <button class="btn btn-ghost" id="btn-show-word" disabled title="Show the current word visually" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" data-astro-cid-goozqd4e></path> <circle cx="12" cy="12" r="3" data-astro-cid-goozqd4e></circle> </svg> <span id="show-word-label" data-astro-cid-goozqd4e>Show</span> </button> <select class="difficulty-select" id="difficulty-select" aria-label="Select level" data-astro-cid-goozqd4e> <option value="level-1" data-astro-cid-goozqd4e>L1 — 🌱 Beginner</option><option value="level-2" data-astro-cid-goozqd4e>L2 — 🌿 Elementary</option><option value="level-3" data-astro-cid-goozqd4e>L3 — 🔥 Intermediate</option><option value="level-4" data-astro-cid-goozqd4e>L4 — ⚡ Upper Intermediate</option><option value="level-5" data-astro-cid-goozqd4e>L5 — 💎 Advanced</option><option value="level-6" data-astro-cid-goozqd4e>L6 — 🏆 Expert</option><option value="level-7" data-astro-cid-goozqd4e>L7 — 👑 Master</option><option value="level-8" data-astro-cid-goozqd4e>L8 — 🌟 Pro</option> </select> </div> </header> <!-- Main Game Area --> <main class="game-area" data-astro-cid-goozqd4e> <!-- Status / Word Display --> <div class="speak-indicator" id="speak-indicator" data-astro-cid-goozqd4e> <div class="wave-bars" data-astro-cid-goozqd4e> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> <span class="wave-bar" data-astro-cid-goozqd4e></span> </div> <span class="speak-label" id="speak-label" data-astro-cid-goozqd4e>Listening...</span> </div> <!-- Level Info --> <div class="level-info" id="level-info" data-astro-cid-goozqd4e> <span class="level-badge" id="level-badge" data-astro-cid-goozqd4e>L1</span> <span class="level-emoji" id="level-emoji" data-astro-cid-goozqd4e>🌱</span> <span class="level-desc" id="level-desc" data-astro-cid-goozqd4e>2–3 letter words. Home row focus.</span> </div> <!-- Stats Bar --> <div class="stats-bar" data-astro-cid-goozqd4e> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-wpm" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>WPM</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-accuracy" data-astro-cid-goozqd4e>100%</span> <span class="stat-label" data-astro-cid-goozqd4e>Accuracy</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-time" data-astro-cid-goozqd4e>0:00</span> <span class="stat-label" data-astro-cid-goozqd4e>Time</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-words" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>Words</span> </div> <div class="stat-divider" data-astro-cid-goozqd4e></div> <div class="stat" data-astro-cid-goozqd4e> <span class="stat-value" id="stat-streak" data-astro-cid-goozqd4e>0</span> <span class="stat-label" data-astro-cid-goozqd4e>Streak</span> </div> </div> <!-- Virtual Keyboard (finger mode) --> <div class="virtual-keyboard" id="virtual-keyboard" hidden data-astro-cid-goozqd4e> <div class="kb-row" id="kb-row-1" data-astro-cid-goozqd4e> <span class="kb-key" data-key="q" data-astro-cid-goozqd4e>Q</span> <span class="kb-key" data-key="w" data-astro-cid-goozqd4e>W</span> <span class="kb-key" data-key="e" data-astro-cid-goozqd4e>E</span> <span class="kb-key" data-key="r" data-astro-cid-goozqd4e>R</span> <span class="kb-key" data-key="t" data-astro-cid-goozqd4e>T</span> <span class="kb-key" data-key="y" data-astro-cid-goozqd4e>Y</span> <span class="kb-key" data-key="u" data-astro-cid-goozqd4e>U</span> <span class="kb-key" data-key="i" data-astro-cid-goozqd4e>I</span> <span class="kb-key" data-key="o" data-astro-cid-goozqd4e>O</span> <span class="kb-key" data-key="p" data-astro-cid-goozqd4e>P</span> </div> <div class="kb-row" id="kb-row-2" data-astro-cid-goozqd4e> <span class="kb-spacer" data-astro-cid-goozqd4e></span> <span class="kb-key" data-key="a" data-astro-cid-goozqd4e>A</span> <span class="kb-key" data-key="s" data-astro-cid-goozqd4e>S</span> <span class="kb-key" data-key="d" data-astro-cid-goozqd4e>D</span> <span class="kb-key" data-key="f" data-astro-cid-goozqd4e>F</span> <span class="kb-key" data-key="g" data-astro-cid-goozqd4e>G</span> <span class="kb-key" data-key="h" data-astro-cid-goozqd4e>H</span> <span class="kb-key" data-key="j" data-astro-cid-goozqd4e>J</span> <span class="kb-key" data-key="k" data-astro-cid-goozqd4e>K</span> <span class="kb-key" data-key="l" data-astro-cid-goozqd4e>L</span> <span class="kb-spacer" data-astro-cid-goozqd4e></span> </div> <div class="kb-row" id="kb-row-3" data-astro-cid-goozqd4e> <span class="kb-spacer2" data-astro-cid-goozqd4e></span> <span class="kb-key" data-key="z" data-astro-cid-goozqd4e>Z</span> <span class="kb-key" data-key="x" data-astro-cid-goozqd4e>X</span> <span class="kb-key" data-key="c" data-astro-cid-goozqd4e>C</span> <span class="kb-key" data-key="v" data-astro-cid-goozqd4e>V</span> <span class="kb-key" data-key="b" data-astro-cid-goozqd4e>B</span> <span class="kb-key" data-key="n" data-astro-cid-goozqd4e>N</span> <span class="kb-key" data-key="m" data-astro-cid-goozqd4e>M</span> <span class="kb-spacer2" data-astro-cid-goozqd4e></span> </div> <div class="kb-hand-label" id="kb-hand-label" data-astro-cid-goozqd4e></div> </div> <!-- Typing Display --> <div class="typing-display" id="typing-display" data-astro-cid-goozqd4e> <div class="target-characters" id="target-characters" data-astro-cid-goozqd4e></div> <div class="cursor-blink" id="cursor-blink" data-astro-cid-goozqd4e>|</div> </div> <!-- Revealed word (hidden by default in voice mode) --> <div class="word-reveal" id="word-reveal" hidden data-astro-cid-goozqd4e> <span class="reveal-label" data-astro-cid-goozqd4e>Current word:</span> <span class="reveal-word" id="reveal-word" data-astro-cid-goozqd4e></span> </div> <!-- Hidden input for capturing keystrokes --> <input type="text" class="hidden-input" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type what you hear" data-astro-cid-goozqd4e> <!-- Controls --> <div class="controls" data-astro-cid-goozqd4e> <button class="btn btn-primary" id="btn-start" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" data-astro-cid-goozqd4e> <polygon points="5 3 19 12 5 21 5 3" data-astro-cid-goozqd4e></polygon> </svg>
 Start Practice
 </button> <button class="btn btn-secondary" id="btn-repeat" disabled data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <polyline points="1 4 1 10 7 10" data-astro-cid-goozqd4e></polyline> <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" data-astro-cid-goozqd4e></path> </svg>
 Repeat
@@ -6,11 +6,15 @@ Repeat
 Restart
 </button> </div> <!-- Word Count Progress --> <div class="progress-bar" id="progress-bar" data-astro-cid-goozqd4e> <div class="progress-fill" id="progress-fill" data-astro-cid-goozqd4e></div> </div> <!-- Summary (shown after session) --> <div class="summary" id="summary" hidden data-astro-cid-goozqd4e> <h2 class="summary-title" data-astro-cid-goozqd4e>Session Complete!</h2> <div class="summary-stats" data-astro-cid-goozqd4e> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-wpm" data-astro-cid-goozqd4e>0</span> <span class="summary-label" data-astro-cid-goozqd4e>WPM</span> </div> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-accuracy" data-astro-cid-goozqd4e>0%</span> <span class="summary-label" data-astro-cid-goozqd4e>Accuracy</span> </div> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-words" data-astro-cid-goozqd4e>0</span> <span class="summary-label" data-astro-cid-goozqd4e>Words</span> </div> <div class="summary-stat" data-astro-cid-goozqd4e> <span class="summary-value" id="summary-time" data-astro-cid-goozqd4e>0:00</span> <span class="summary-label" data-astro-cid-goozqd4e>Time</span> </div> </div> <button class="btn btn-primary" id="btn-summary-restart" data-astro-cid-goozqd4e> <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" data-astro-cid-goozqd4e> <polyline points="23 4 23 10 17 10" data-astro-cid-goozqd4e></polyline> <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" data-astro-cid-goozqd4e></path> </svg>
 Practice Again
-</button> </div> </main> <!-- Keyboard hint --> <footer class="trainer-footer" data-astro-cid-goozqd4e> <div class="hints" data-astro-cid-goozqd4e> <kbd data-astro-cid-goozqd4e>Space</kbd> Repeat word
-<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Esc</kbd> Skip word
+</button> </div> </main> <!-- Keyboard hint --> <footer class="trainer-footer" data-astro-cid-goozqd4e> <div class="hints" id="hints-voice" data-astro-cid-goozqd4e> <kbd data-astro-cid-goozqd4e>Space</kbd> Repeat
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Esc</kbd> Skip
 <span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Tab</kbd> Restart
-<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>`</kbd> Reveal word
-</div> </footer> </div> <script>(function(){const wordBanks = [{"id":"short-words","label":"Short Words","description":"3–5 letter common words","words":["the","cat","dog","run","big","red","fun","map","sun","cup","fish","bird","tree","book","hand","fast","blue","cold","warm","soft","play","star","rain","door","bell","king","song","lake","hill","milk","jump","read","sing","walk","talk","give","take","make","come","help","wave","dust","gold","wind","rock","sand","moon","fire","snow","time","love","hope","calm","deep","bold","fair","kind","wild","tall","true"]},{"id":"medium-words","label":"Medium Words","description":"6–8 letter intermediate words","words":["morning","blanket","picture","garden","window","planet","silver","cotton","spring","winter","summer","autumn","candle","basket","helmet","rocket","purple","orange","yellow","forest","bridge","castle","dragon","flower","gentle","honest","kindly","bright","clever","golden","hidden","jumble","kitten","ladder","marble","number","puzzle","rabbit","saddle","turtle","violet","wiggle","zephyr","better","corner","dinner","frozen","goblin","hammer","insect","jungle","kettle","lemon","mirror","narrow","oxygen"]},{"id":"long-words","label":"Long Words","description":"9+ letter challenging words","words":["beautiful","development","education","environment","government","conference","experience","knowledge","community","challenge","opportunity","adventure","excellence","independent","literature","technology","university","resolution","celebration","difference","expression","foundation","generation","historical","impossible","leadership","management","navigation","obsession","phenomenon","philosophy","recognition","satisfaction","temperature","understanding","vegetable","yesterday","champion","dangerous","furniture"]},{"id":"phrases","label":"Phrases","description":"Common short phrases (2–3 words)","words":["hello world","good morning","thank you","have fun","well done","keep going","stay calm","be brave","nice work","all good","time flies","so cool","big dream","deep breath","bright idea","fast pace","fresh air","hard work","high five","long road","next step","open mind","quiet place","real deal","safe space","slow down","smart move","sweet spot","tough job","warm smile","wise choice","young soul","zen mode","pure joy","true love","kind heart","fair game","free time","great job","happy day"]},{"id":"sentences","label":"Sentences","description":"Full sentences for advanced practice","words":["The quick brown fox jumps over the lazy dog.","She sells seashells by the seashore.","How much wood would a woodchuck chuck?","The rain in Spain falls mainly on the plain.","Peter Piper picked a peck of pickled peppers.","A journey of a thousand miles begins with a single step.","To be or not to be that is the question.","All that glitters is not gold.","The early bird catches the worm.","Practice makes perfect.","Knowledge is power.","Time waits for no one.","The best time to plant a tree was twenty years ago.","In the middle of difficulty lies opportunity.","Life is what happens when you are busy making other plans.","The only way to do great work is to love what you do.","Simplicity is the ultimate sophistication.","Try not to become a man of success but a man of value.","The future belongs to those who believe in the beauty of their dreams.","It does not matter how slowly you go as long as you do not stop."]}];
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>`</kbd> Reveal
+</div> <div class="hints" id="hints-fingers" hidden data-astro-cid-goozqd4e> <kbd data-astro-cid-goozqd4e>Space</kbd> Speak word
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Esc</kbd> Skip
+<span class="hint-divider" data-astro-cid-goozqd4e></span> <kbd data-astro-cid-goozqd4e>Tab</kbd> Restart
+</div> </footer> </div> <script>(function(){const wordBanks = [{"id":"level-1","level":1,"label":"Beginner","emoji":"🌱","description":"2–3 letter words. Home row focus. Simple vowel-consonant patterns.","words":["a","I","as","at","am","an","be","by","do","go","he","if","in","is","it","me","my","no","of","on","or","so","to","up","us","we","and","are","but","can","cat","dog","run","sit","big","red","fun","map","sun","cup","get","had","has","her","him","his","hot","how","let","man","may","men","new","not","now","old","out","put","sad","say","see","she","the","too","use","was","way","who","yes","yet","add","age","ago","aid","aim","air","arm","art","bad","bag","bar","bat","bed","bit","box","bus","buy","car","cut","day"]},{"id":"level-2","level":2,"label":"Elementary","emoji":"🌿","description":"3–4 letter words. All rows. Common digraphs (th, sh, ch, wh).","words":["that","this","with","they","them","then","than","when","what","which","fish","ship","shop","show","shot","shut","cash","dish","wash","wish","chat","chip","chin","much","rich","such","each","beach","bench","catch","book","look","took","cook","good","wood","foot","room","door","soon","hand","land","sand","band","find","kind","mind","wind","long","song","king","ring","sing","wing","cold","gold","hold","told","both","most","blue","true","glue","clue","play","stay","tray","pray","gray","trip","tree","free","green","sleep","sweet","street","clean","dream","cream","bread","bird","girl","turn","burn","farm","warm","garden","hard","dark","park","star","fair","hair","pair","chair","stair","rain","train","brain","plain"]},{"id":"level-3","level":3,"label":"Intermediate","emoji":"🔥","description":"4–5 letter words. Common blends (br, cr, dr, fr, gr, tr, st, sp, sk).","words":["bridge","bring","broke","brown","brush","brave","bread","break","brick","brand","crane","crash","crawl","cream","creek","crisp","cross","crowd","crown","crazy","draft","drain","drama","drank","drave","dream","dress","dried","drift","drink","frame","frank","fresh","front","frost","frown","fruit","frill","frock","frump","grace","grade","grain","grand","grant","grape","graph","grasp","grass","grate","space","spade","spare","spark","speak","spend","spent","spice","spill","spine","stage","stair","stake","stale","stand","stark","start","state","steam","steel","skill","skull","skate","sketch","skirt","skulk","skimp","skank","skiff","skald","track","trade","trail","train","trait","trash","treat","trend","trial","tribe","sharp","sheer","shift","shine","shirt","shock","shore","shout","shove","shape"]},{"id":"level-4","level":4,"label":"Upper Intermediate","emoji":"⚡","description":"5–6 letter words. Multi-syllable. Vowel teams & silent letters.","words":["castle","battle","cattle","kettle","little","bottle","settle","riddle","middle","puddle","dragon","wagon","beacon","button","cotton","mutton","kitten","mitten","gotten","bitten","gentle","humble","simple","sample","temple","purple","circle","castle","whistle","thistle","bright","flight","plight","slight","knight","weight","height","eight","freight","neighbor","honest","listen","castle","whistle","thistle","rustle","bustle","hustle","jostle","wrestle","forest","harvest","honest","modest","earnest","request","suggest","digest","protest","invest","garden","sudden","hidden","maiden","wooden","golden","frozen","barren","barren","dozen","window","pillow","willow","bellow","follow","hollow","yellow","shallow","swallow","wallow","basket","blanket","planet","trumpet","pocket","rocket","bucket","market","ticket","jacket","silver","proper","butter","dinner","summer","winner","supper","copper","hammer","ladder"]},{"id":"level-5","level":5,"label":"Advanced","emoji":"💎","description":"6–8 letter words. Multi-syllable. Uncommon letter patterns & prefixes.","words":["morning","evening","finding","feeling","meaning","meeting","reading","writing","waiting","watching","blanket","pocket","rocket","trumpet","planet","market","ticket","bucket","jacket","basket","picture","capture","lecture","nature","culture","feature","fracture","mixture","posture","gesture","quarter","chapter","charter","diameter","barrier","carrier","cater","character","chatter","clatter","billion","million","trillion","cushion","fashion","pension","session","tension","version","vision","forward","backward","upward","downward","inward","outward","landward","seaward","homeward","wayward","pattern","mattress","matter","battle","cattle","kettle","little","bottle","settle","riddle","account","amount","appoint","approach","arrange","arrive","assault","attempt","attend","attract","balloon","bamboo","banana","biscuit","buffalo","cabinet","calcium","calendar","camel","candle","chimney","chorus","circuit","climate","closet","college","column","comfort","commit","common"]},{"id":"level-6","level":6,"label":"Expert","emoji":"🏆","description":"8–10 letter words. Complex spelling. Academic & sophisticated vocabulary.","words":["beautiful","wonderful","faithful","helpful","hopeful","peaceful","powerful","thankful","thoughtful","truthful","building","challenging","comforting","depending","developing","encouraging","entertaining","everlasting","following","fulfilling","education","attention","condition","direction","duration","election","emotion","eruption","exception","fraction","complete","collect","connect","correct","corrupt","disrupt","elect","erect","inspect","interrupt","knowledge","acknowledge","edge","hedge","judge","ledge","pledge","sledge","dredge","sedge","language","luggage","baggage","garbage","hostage","postage","vintage","courage","voyage","damage","moment","movement","agreement","apartment","department","equipment","establishment","government","investment","management","natural","actual","annual","casual","digital","equal","gradual","individual","intellectual","manual","popular","circular","cellular","particular","regular","singular","spectacular","unpopular","vernacular","secular","mysterious","curious","furious","glorious","gracious","industrious","infectious","jealous","joyous","mountainous"]},{"id":"level-7","level":7,"label":"Master","emoji":"👑","description":"Short phrases (2–4 words). Recall & type multiple words spoken in sequence.","words":["hello world","good morning","thank you","have fun","well done","keep going","stay calm","be brave","nice work","all good","time flies","so cool","big dream","take care","good luck","fast pace","fresh air","hard work","high five","long road","next step","open mind","quiet place","real deal","safe space","slow down","smart move","sweet spot","tough job","warm smile","wise choice","young soul","pure joy","true love","kind heart","fair game","free time","great job","happy day","bright future","star light","moon beam","sun rise","deep sea","wild fire","gold mine","iron will","steel nerve","stone cold","ice cold","bird eye","cat nap","fox trot","bear hug","wolf pack"]},{"id":"level-8","level":8,"label":"Pro","emoji":"🌟","description":"Complex sentences. Punctuation, capitalization & advanced vocabulary.","words":["The quick brown fox jumps over the lazy dog.","She sells seashells by the seashore.","How much wood would a woodchuck chuck?","The rain in Spain falls mainly on the plain.","Peter Piper picked a peck of pickled peppers.","A journey of a thousand miles begins with a single step.","To be or not to be, that is the question.","All that glitters is not gold.","The early bird catches the worm.","Practice makes perfect, but perfection is a myth.","Knowledge is power, but enthusiasm pulls the switch.","Time waits for no one, so make every moment count.","The best time to plant a tree was twenty years ago.","In the middle of difficulty lies opportunity.","Life is what happens when you are busy making other plans.","The only way to do great work is to love what you do.","Simplicity is the ultimate sophistication.","Try not to become a man of success, but a man of value.","The future belongs to those who believe in the beauty of their dreams.","It does not matter how slowly you go, as long as you do not stop.","Great minds discuss ideas; average minds discuss events.","What lies behind us and what lies before us are tiny matters compared to what lies within us.","Creativity is intelligence having fun.","The only impossible journey is the one you never begin.","Success is not final, failure is not fatal: it is the courage to continue that counts."]}];
+const fingerTrainings = [{"id":"finger-1","level":1,"label":"Home Row","emoji":"✋","description":"A S D F G H J K L — the foundation of touch typing. Keep fingers on home row.","activeKeys":"asdfghjkl","hand":"both","words":["a","as","ad","ah","al","all","ask","add","ash","ass","dad","dad","fad","gal","gas","had","half","hall","hand","has","had","flag","flak","flash","gala","gash","glass","glad","half","hall","jag","jazz","lag","lash","lass","lad","lads","lag","lash","lass","sad","sag","sash","shag","slag","shall","shad","shag","skag","slag","a","as","ad","ah","al","all","ask","add","ash","ass","dad","fad","gal","gas","had","half","hall","hand","has","had","flag","flak","flash","gala","gash","glass","glad","half","hall","hand","jag","jazz","lag","lash","lass","lad","lads","lag","lash","lass"]},{"id":"finger-2","level":2,"label":"Top Row","emoji":"👆","description":"Q W E R T Y U I O P — reach up from home row. Practice upper row fluency.","activeKeys":"qwertyuiopasdfghjkl","hand":"both","words":["are","art","ash","ask","awe","die","dig","dip","dot","dry","ear","eat","era","far","fat","feat","fed","few","fit","fly","for","fort","fry","fur","gate","get","gift","gig","girl","git","hat","heat","her","here","hide","hire","hit","hog","hop","hot","its","jet","job","joy","just","key","kid","kit","late","lay","lead","left","let","lie","lip","lit","log","lot","low","lot","made","make","map","mat","may","meat","meet","melt","met","mild","note","odd","offer","often","oil","old","ore","our","out","over","page","paid","pair","part","past","pat","pay","peak","pet","plot","port","post","pot","pour","power","pray","pull","pure","put","quit"]},{"id":"finger-3","level":3,"label":"Bottom Row","emoji":"👇","description":"Z X C V B N M — reach down from home row. Strengthen lower row accuracy.","activeKeys":"zxcvbnmasdfghjkl","hand":"both","words":["am","an","as","back","bad","bag","ban","band","bank","bass","cab","cad","calm","can","cash","clad","clam","clan","class","clash","dab","dam","dash","fan","fax","fad","flab","flash","flag","flak","gab","gad","gang","gas","glad","glass","ham","hand","hang","has","jam","jazz","lab","lamb","lamp","land","lash","lass","man","mass","nab","nag","nav","sad","sag","sang","sash","scab","scan","shag","sham","shan","slag","slab","slang","smash","snag","stab","stag","swam","vad","vam","van","vas","vax","zap","zag","zan","zax","zags","bank","bask","cask","flag","flank","flash","gash","glass","hand","hang","lank","lash","mask","mass","sand","sash","scan","shag","shank","slash"]},{"id":"finger-4","level":4,"label":"All Rows","emoji":"🖐️","description":"Full alphabet. Combine all rows for comprehensive finger practice.","activeKeys":"qwertyuiopasdfghjklzxcvbnm","hand":"both","words":["about","above","across","after","again","agree","allow","among","anger","apart","basic","begin","being","below","blame","blank","blast","blend","blind","block","brick","bring","broad","broke","brown","brush","build","bunch","burst","cabin","cable","candy","cargo","carry","catch","cause","chain","chair","chalk","charm","clash","class","clean","clear","climb","clock","close","cloth","cloud","coach","crack","craft","crane","crash","crawl","crazy","cream","crest","crime","crisp","dance","decay","delay","depth","desk","diary","dirty","doubt","dozen","draft","drain","drama","drank","dress","dried","drift","drink","drive","drops","drove","early","earth","eight","empty","enjoy","enter","entry","equal","error","event","exist","extra","fable","fairy","faith","fancy","fatal","feast","fence","ferry"]},{"id":"finger-5","level":5,"label":"Left Hand","emoji":"👈","description":"Q W E R T A S D F G Z X C V B — train your dominant left hand in isolation.","activeKeys":"qwertasdfgzxcvb","hand":"left","words":["are","art","ask","awe","bad","bag","bar","bat","bed","beg","best","bet","brad","brag","brat","bread","breeze","brett","cave","crab","craft","crate","craze","crest","crev","crew","dad","dare","dart","daze","dead","deaf","dear","deb","debt","deed","deep","deer","desk","dewey","drag","draft","drag","drat","draw","dread","dress","drew","earl","earn","east","easy","eater","edge","era","ever","extra","face","fact","fade","fair","faith","far","fast","fate","fear","feast","feed","feet","fence","fest","few","fever","faze","gear","get","gave","great","greet","grew","race","raft","rage","rare","rate","rave","razed","react","read","rear","seat","seed","seer","serve","star","stare","start","state","steak","steam"]},{"id":"finger-6","level":6,"label":"Right Hand","emoji":"👉","description":"Y U I O P H J K L N M — train your right hand in isolation.","activeKeys":"yuiophjklnm","hand":"right","words":["hip","hop","hymn","ill","imp","ink","inn","ion","join","jolt","july","jump","junk","just","kill","kin","kind","king","kiss","knoll","knoll","know","lion","lip","lull","lump","lynch","mill","milk","mill","mind","mini","mink","mint","miss","moil","moon","mop","mull","mump","hill","hilt","himp","holy","honk","hook","hoop","hop","hull","hump","join","jolt","july","jump","junk","just","kill","kin","kind","king","link","lion","lip","lull","lump","lynch","mill","milk","mill","mind","nill","nimp","nip","noll","noon","null","null","null","nun","nylon","only","oozy","opin","opium","pin","pink","pint","ploy","plum","plump","pulp","pump","pun","puppy","upon","up","you","young","your","youth"]},{"id":"finger-7","level":7,"label":"Alternating Hands","emoji":"🤝","description":"Left-right-left-right patterns. Train hand coordination & rhythm.","activeKeys":"qwertyuiopasdfghjklzxcvbnm","hand":"both","words":["at","an","am","as","at","be","by","do","go","he","if","in","is","it","me","my","of","on","or","so","to","up","us","we","big","but","can","cat","day","did","dog","end","far","fun","get","got","had","has","her","him","his","hot","how","its","let","man","may","men","met","new","not","now","old","out","own","put","ran","run","sad","say","see","set","she","sit","sun","ten","the","top","two","use","was","way","wet","who","why","yes","yet","you","and","are","ball","call","cold","dark","each","fall","gold","hand","just","kind","last","make","name","once","part","rain","safe","take","very","wait"]},{"id":"finger-8","level":8,"label":"Speed Grinds","emoji":"⚡","description":"High-frequency bigrams & trigrams. Build muscle memory for common letter pairs.","activeKeys":"qwertyuiopasdfghjklzxcvbnm","hand":"both","words":["the","and","for","are","but","not","you","all","any","can","had","her","was","one","our","out","has","have","had","been","they","that","this","them","then","than","what","when","were","with","after","again","being","could","doing","every","first","going","great","having","which","their","there","where","would","about","other","still","under","while","because","before","believe","between","against","already","another","becoming","brought","building","children","complete","consider","continue","couldn't","country","coverage","customer","daughter","decision","describe","despite","destroy","develop","discover","distinct","division","document","domestic","eastern","economic","edition","educator","election","elephant","embrace","emotion","emphasis","employee","enforce","engineering","enormous","entirely","envelope","equation","escalate","estimate","evaluate","eventual","everyone"]}];
 
   // ---- DOM Elements ----
   const hiddenInput = document.getElementById("hidden-input");
@@ -29,6 +33,23 @@ Practice Again
   const progressFill = document.getElementById("progress-fill");
   const wordReveal = document.getElementById("word-reveal");
   const revealWord = document.getElementById("reveal-word");
+  const levelBadge = document.getElementById("level-badge");
+  const levelEmoji = document.getElementById("level-emoji");
+  const levelDesc = document.getElementById("level-desc");
+
+  // Mode toggle elements
+  const modeVoice = document.getElementById("mode-voice");
+  const modeFingers = document.getElementById("mode-fingers");
+  const virtualKeyboard = document.getElementById("virtual-keyboard");
+  const kbHandLabel = document.getElementById("kb-hand-label");
+  const hintsVoice = document.getElementById("hints-voice");
+  const hintsFingers = document.getElementById("hints-fingers");
+  const allKbKeys = document.querySelectorAll(".kb-key");
+
+  // Element references for keyboard rows
+  const kbRow1 = document.getElementById("kb-row-1");
+  const kbRow2 = document.getElementById("kb-row-2");
+  const kbRow3 = document.getElementById("kb-row-3");
 
   // Stat elements
   const statWpm = document.getElementById("stat-wpm");
@@ -45,6 +66,7 @@ Practice Again
 
   // ---- State ----
   const state = {
+    mode: "voice", // "voice" | "fingers"
     currentBank: [],
     currentIndex: 0,
     currentWord: "",
@@ -126,11 +148,25 @@ Practice Again
     return shuffled;
   }
 
+  function getActiveBanks() {
+    return state.mode === "fingers" ? fingerTrainings : wordBanks;
+  }
+
   function loadWordBank(bankId) {
-    const bank = wordBanks.find((b) => b.id === bankId) || wordBanks[0];
+    const banks = getActiveBanks();
+    const bank = banks.find((b) => b.id === bankId) || banks[0];
     state.currentBank = shuffleArray(bank.words);
     state.wordOrder = state.currentBank.slice(0, state.maxWords);
     state.currentIndex = 0;
+    // Update level info display
+    levelBadge.textContent = `L${bank.level}`;
+    levelEmoji.textContent = bank.emoji;
+    levelDesc.textContent = bank.description;
+
+    // Update keyboard visualization in finger mode
+    if (state.mode === "fingers") {
+      renderKeyboard(bank.activeKeys || "", bank.hand || "both");
+    }
   }
 
   function nextWord() {
@@ -152,10 +188,41 @@ Practice Again
     updateProgress();
     hiddenInput.value = "";
     updateStats();
-    // Set speaking state early to prevent typing during speech
-    setTimeout(() => {
-      speakWord(state.currentWord);
-    }, 300);
+
+    if (state.mode === "fingers") {
+      // Finger mode: show word, don't speak
+      revealWord.textContent = state.currentWord;
+      wordReveal.hidden = false;
+      state.wordRevealed = true;
+      showWordLabel.textContent = "Hide";
+      // Focus the input immediately
+      hiddenInput.focus();
+    } else {
+      // Voice mode: speak the word after a delay
+      setTimeout(() => {
+        speakWord(state.currentWord);
+      }, 300);
+    }
+  }
+
+  // ---- Virtual Keyboard ----
+  function renderKeyboard(activeKeys, hand) {
+    // Highlight active keys
+    const lowerKeys = activeKeys.toLowerCase();
+    allKbKeys.forEach((keyEl) => {
+      const key = keyEl.dataset.key;
+      if (lowerKeys.includes(key)) {
+        keyEl.classList.add("kb-active");
+        keyEl.classList.remove("kb-inactive");
+      } else {
+        keyEl.classList.remove("kb-active");
+        keyEl.classList.add("kb-inactive");
+      }
+    });
+
+    // Update hand label
+    const handLabels = { left: "👈 Left hand focus", right: "👉 Right hand focus", both: "✋ Both hands" };
+    kbHandLabel.textContent = handLabels[hand] || "";
   }
 
   // ---- Word Reveal ----
@@ -311,6 +378,48 @@ Practice Again
     state.stats.wordsCompleted++;
   }
 
+  function populateLevelSelect() {
+    const banks = getActiveBanks();
+    const currentVal = difficultySelect.value;
+    difficultySelect.innerHTML = "";
+    banks.forEach((bank) => {
+      const opt = document.createElement("option");
+      opt.value = bank.id;
+      opt.textContent = `L${bank.level} — ${bank.emoji} ${bank.label}`;
+      difficultySelect.appendChild(opt);
+    });
+    // Restore selection if it exists in the new banks, otherwise pick first
+    const exists = banks.some((b) => b.id === currentVal);
+    difficultySelect.value = exists ? currentVal : banks[0].id;
+  }
+
+  function switchMode(mode) {
+    if (state.isActive) return; // Can't switch during a session
+    if (state.mode === mode) return;
+
+    state.mode = mode;
+
+    // Update toggle buttons
+    modeVoice.classList.toggle("mode-active", mode === "voice");
+    modeVoice.setAttribute("aria-checked", mode === "voice");
+    modeFingers.classList.toggle("mode-active", mode === "fingers");
+    modeFingers.setAttribute("aria-checked", mode === "fingers");
+
+    // Show/hide keyboard visualization
+    virtualKeyboard.hidden = mode !== "fingers";
+
+    // Show/hide relevant hints
+    hintsVoice.hidden = mode !== "voice";
+    hintsFingers.hidden = mode !== "fingers";
+
+    // Update input aria-label
+    hiddenInput.ariaLabel = mode === "fingers" ? "Type the word shown above" : "Type what you hear";
+
+    // Repopulate level select with correct banks
+    populateLevelSelect();
+    loadWordBank(difficultySelect.value);
+  }
+
   // ---- Session Management ----
   function startSession() {
     state.stats = {
@@ -339,7 +448,9 @@ Practice Again
     btnRepeat.disabled = false;
     btnRestart.disabled = false;
     btnShowWord.disabled = false;
-    document.querySelector(".difficulty-select").disabled = true;
+    difficultySelect.disabled = true;
+    modeVoice.disabled = true;
+    modeFingers.disabled = true;
 
     loadWordBank(difficultySelect.value);
 
@@ -374,10 +485,16 @@ Practice Again
     btnRepeat.disabled = true;
     btnRestart.disabled = true;
     btnShowWord.disabled = true;
-    document.querySelector(".difficulty-select").disabled = false;
+    difficultySelect.disabled = false;
+    modeVoice.disabled = false;
+    modeFingers.disabled = false;
 
     speakIndicator.classList.remove("speaking");
-    speakLabel.textContent = "Session complete!";
+    if (state.mode === "fingers") {
+      // In finger mode, hide the word reveal
+      wordReveal.hidden = true;
+    }
+    speakLabel.textContent = state.mode === "fingers" ? "Session complete!" : "Session complete!";
 
     showSummary();
   }
@@ -422,7 +539,9 @@ Practice Again
     btnRepeat.disabled = true;
     btnRestart.disabled = true;
     btnShowWord.disabled = true;
-    document.querySelector(".difficulty-select").disabled = false;
+    difficultySelect.disabled = false;
+    modeVoice.disabled = false;
+    modeFingers.disabled = false;
     speakLabel.textContent = "Press Start to begin";
     speakIndicator.classList.remove("speaking");
     hiddenInput.blur();
@@ -516,6 +635,10 @@ Practice Again
   btnSummaryRestart.addEventListener("click", startSession);
   btnShowWord.addEventListener("click", toggleReveal);
 
+  // Mode toggle events
+  modeVoice.addEventListener("click", () => switchMode("voice"));
+  modeFingers.addEventListener("click", () => switchMode("fingers"));
+
   hiddenInput.addEventListener("input", handleInput);
   hiddenInput.addEventListener("keydown", handleKeyDown);
 
@@ -530,6 +653,10 @@ Practice Again
       loadWordBank(difficultySelect.value);
     }
   });
+
+  // Initialize mode UI
+  virtualKeyboard.hidden = true;
+  hintsFingers.hidden = true;
 
   // Load voices on init
   if (window.speechSynthesis) {

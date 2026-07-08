@@ -1,5 +1,6 @@
 ---
 import { wordBanks } from "../data/wordBanks";
+import { fingerTrainings } from "../data/fingerTrainings";
 ---
 
 <div class="trainer-container" id="typing-trainer">
@@ -15,6 +16,23 @@ import { wordBanks } from "../data/wordBanks";
       <span class="logo-text">VoiceTouch</span>
     </div>
     <div class="header-controls">
+      <!-- Mode Toggle -->
+      <div class="mode-toggle" role="radiogroup" aria-label="Training mode">
+        <button class="mode-btn mode-active" id="mode-voice" role="radio" aria-checked="true" title="Voice-prompted typing">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          </svg>
+          <span>Voice</span>
+        </button>
+        <button class="mode-btn" id="mode-fingers" role="radio" aria-checked="false" title="Finger-specific training">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            <path d="M21 16v2a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-2" />
+          </svg>
+          <span>Fingers</span>
+        </button>
+      </div>
       <button class="btn btn-ghost" id="btn-show-word" disabled title="Show the current word visually">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -22,9 +40,9 @@ import { wordBanks } from "../data/wordBanks";
         </svg>
         <span id="show-word-label">Show</span>
       </button>
-      <select class="difficulty-select" id="difficulty-select" aria-label="Select difficulty">
+      <select class="difficulty-select" id="difficulty-select" aria-label="Select level">
         {wordBanks.map((bank) => (
-          <option value={bank.id}>{bank.label}</option>
+          <option value={bank.id}>L{bank.level} — {bank.emoji} {bank.label}</option>
         ))}
       </select>
     </div>
@@ -42,6 +60,13 @@ import { wordBanks } from "../data/wordBanks";
         <span class="wave-bar"></span>
       </div>
       <span class="speak-label" id="speak-label">Listening...</span>
+    </div>
+
+    <!-- Level Info -->
+    <div class="level-info" id="level-info">
+      <span class="level-badge" id="level-badge">L1</span>
+      <span class="level-emoji" id="level-emoji">🌱</span>
+      <span class="level-desc" id="level-desc">2–3 letter words. Home row focus.</span>
     </div>
 
     <!-- Stats Bar -->
@@ -72,13 +97,54 @@ import { wordBanks } from "../data/wordBanks";
       </div>
     </div>
 
+    <!-- Virtual Keyboard (finger mode) -->
+    <div class="virtual-keyboard" id="virtual-keyboard" hidden>
+      <div class="kb-row" id="kb-row-1">
+        <span class="kb-key" data-key="q">Q</span>
+        <span class="kb-key" data-key="w">W</span>
+        <span class="kb-key" data-key="e">E</span>
+        <span class="kb-key" data-key="r">R</span>
+        <span class="kb-key" data-key="t">T</span>
+        <span class="kb-key" data-key="y">Y</span>
+        <span class="kb-key" data-key="u">U</span>
+        <span class="kb-key" data-key="i">I</span>
+        <span class="kb-key" data-key="o">O</span>
+        <span class="kb-key" data-key="p">P</span>
+      </div>
+      <div class="kb-row" id="kb-row-2">
+        <span class="kb-spacer"></span>
+        <span class="kb-key" data-key="a">A</span>
+        <span class="kb-key" data-key="s">S</span>
+        <span class="kb-key" data-key="d">D</span>
+        <span class="kb-key" data-key="f">F</span>
+        <span class="kb-key" data-key="g">G</span>
+        <span class="kb-key" data-key="h">H</span>
+        <span class="kb-key" data-key="j">J</span>
+        <span class="kb-key" data-key="k">K</span>
+        <span class="kb-key" data-key="l">L</span>
+        <span class="kb-spacer"></span>
+      </div>
+      <div class="kb-row" id="kb-row-3">
+        <span class="kb-spacer2"></span>
+        <span class="kb-key" data-key="z">Z</span>
+        <span class="kb-key" data-key="x">X</span>
+        <span class="kb-key" data-key="c">C</span>
+        <span class="kb-key" data-key="v">V</span>
+        <span class="kb-key" data-key="b">B</span>
+        <span class="kb-key" data-key="n">N</span>
+        <span class="kb-key" data-key="m">M</span>
+        <span class="kb-spacer2"></span>
+      </div>
+      <div class="kb-hand-label" id="kb-hand-label"></div>
+    </div>
+
     <!-- Typing Display -->
     <div class="typing-display" id="typing-display">
       <div class="target-characters" id="target-characters"></div>
       <div class="cursor-blink" id="cursor-blink">|</div>
     </div>
 
-    <!-- Revealed word (hidden by default) -->
+    <!-- Revealed word (hidden by default in voice mode) -->
     <div class="word-reveal" id="word-reveal" hidden>
       <span class="reveal-label">Current word:</span>
       <span class="reveal-word" id="reveal-word"></span>
@@ -158,19 +224,26 @@ import { wordBanks } from "../data/wordBanks";
 
   <!-- Keyboard hint -->
   <footer class="trainer-footer">
-    <div class="hints">
-      <kbd>Space</kbd> Repeat word
+    <div class="hints" id="hints-voice">
+      <kbd>Space</kbd> Repeat
       <span class="hint-divider"></span>
-      <kbd>Esc</kbd> Skip word
+      <kbd>Esc</kbd> Skip
       <span class="hint-divider"></span>
       <kbd>Tab</kbd> Restart
       <span class="hint-divider"></span>
-      <kbd>`</kbd> Reveal word
+      <kbd>`</kbd> Reveal
+    </div>
+    <div class="hints" id="hints-fingers" hidden>
+      <kbd>Space</kbd> Speak word
+      <span class="hint-divider"></span>
+      <kbd>Esc</kbd> Skip
+      <span class="hint-divider"></span>
+      <kbd>Tab</kbd> Restart
     </div>
   </footer>
 </div>
 
-<script define:vars={{ wordBanks }}>
+<script define:vars={{ wordBanks, fingerTrainings }}>
   // ---- DOM Elements ----
   const hiddenInput = document.getElementById("hidden-input");
   const targetChars = document.getElementById("target-characters");
@@ -188,6 +261,23 @@ import { wordBanks } from "../data/wordBanks";
   const progressFill = document.getElementById("progress-fill");
   const wordReveal = document.getElementById("word-reveal");
   const revealWord = document.getElementById("reveal-word");
+  const levelBadge = document.getElementById("level-badge");
+  const levelEmoji = document.getElementById("level-emoji");
+  const levelDesc = document.getElementById("level-desc");
+
+  // Mode toggle elements
+  const modeVoice = document.getElementById("mode-voice");
+  const modeFingers = document.getElementById("mode-fingers");
+  const virtualKeyboard = document.getElementById("virtual-keyboard");
+  const kbHandLabel = document.getElementById("kb-hand-label");
+  const hintsVoice = document.getElementById("hints-voice");
+  const hintsFingers = document.getElementById("hints-fingers");
+  const allKbKeys = document.querySelectorAll(".kb-key");
+
+  // Element references for keyboard rows
+  const kbRow1 = document.getElementById("kb-row-1");
+  const kbRow2 = document.getElementById("kb-row-2");
+  const kbRow3 = document.getElementById("kb-row-3");
 
   // Stat elements
   const statWpm = document.getElementById("stat-wpm");
@@ -204,6 +294,7 @@ import { wordBanks } from "../data/wordBanks";
 
   // ---- State ----
   const state = {
+    mode: "voice", // "voice" | "fingers"
     currentBank: [],
     currentIndex: 0,
     currentWord: "",
@@ -285,11 +376,25 @@ import { wordBanks } from "../data/wordBanks";
     return shuffled;
   }
 
+  function getActiveBanks() {
+    return state.mode === "fingers" ? fingerTrainings : wordBanks;
+  }
+
   function loadWordBank(bankId) {
-    const bank = wordBanks.find((b) => b.id === bankId) || wordBanks[0];
+    const banks = getActiveBanks();
+    const bank = banks.find((b) => b.id === bankId) || banks[0];
     state.currentBank = shuffleArray(bank.words);
     state.wordOrder = state.currentBank.slice(0, state.maxWords);
     state.currentIndex = 0;
+    // Update level info display
+    levelBadge.textContent = `L${bank.level}`;
+    levelEmoji.textContent = bank.emoji;
+    levelDesc.textContent = bank.description;
+
+    // Update keyboard visualization in finger mode
+    if (state.mode === "fingers") {
+      renderKeyboard(bank.activeKeys || "", bank.hand || "both");
+    }
   }
 
   function nextWord() {
@@ -311,10 +416,41 @@ import { wordBanks } from "../data/wordBanks";
     updateProgress();
     hiddenInput.value = "";
     updateStats();
-    // Set speaking state early to prevent typing during speech
-    setTimeout(() => {
-      speakWord(state.currentWord);
-    }, 300);
+
+    if (state.mode === "fingers") {
+      // Finger mode: show word, don't speak
+      revealWord.textContent = state.currentWord;
+      wordReveal.hidden = false;
+      state.wordRevealed = true;
+      showWordLabel.textContent = "Hide";
+      // Focus the input immediately
+      hiddenInput.focus();
+    } else {
+      // Voice mode: speak the word after a delay
+      setTimeout(() => {
+        speakWord(state.currentWord);
+      }, 300);
+    }
+  }
+
+  // ---- Virtual Keyboard ----
+  function renderKeyboard(activeKeys, hand) {
+    // Highlight active keys
+    const lowerKeys = activeKeys.toLowerCase();
+    allKbKeys.forEach((keyEl) => {
+      const key = keyEl.dataset.key;
+      if (lowerKeys.includes(key)) {
+        keyEl.classList.add("kb-active");
+        keyEl.classList.remove("kb-inactive");
+      } else {
+        keyEl.classList.remove("kb-active");
+        keyEl.classList.add("kb-inactive");
+      }
+    });
+
+    // Update hand label
+    const handLabels = { left: "👈 Left hand focus", right: "👉 Right hand focus", both: "✋ Both hands" };
+    kbHandLabel.textContent = handLabels[hand] || "";
   }
 
   // ---- Word Reveal ----
@@ -470,6 +606,48 @@ import { wordBanks } from "../data/wordBanks";
     state.stats.wordsCompleted++;
   }
 
+  function populateLevelSelect() {
+    const banks = getActiveBanks();
+    const currentVal = difficultySelect.value;
+    difficultySelect.innerHTML = "";
+    banks.forEach((bank) => {
+      const opt = document.createElement("option");
+      opt.value = bank.id;
+      opt.textContent = `L${bank.level} — ${bank.emoji} ${bank.label}`;
+      difficultySelect.appendChild(opt);
+    });
+    // Restore selection if it exists in the new banks, otherwise pick first
+    const exists = banks.some((b) => b.id === currentVal);
+    difficultySelect.value = exists ? currentVal : banks[0].id;
+  }
+
+  function switchMode(mode) {
+    if (state.isActive) return; // Can't switch during a session
+    if (state.mode === mode) return;
+
+    state.mode = mode;
+
+    // Update toggle buttons
+    modeVoice.classList.toggle("mode-active", mode === "voice");
+    modeVoice.setAttribute("aria-checked", mode === "voice");
+    modeFingers.classList.toggle("mode-active", mode === "fingers");
+    modeFingers.setAttribute("aria-checked", mode === "fingers");
+
+    // Show/hide keyboard visualization
+    virtualKeyboard.hidden = mode !== "fingers";
+
+    // Show/hide relevant hints
+    hintsVoice.hidden = mode !== "voice";
+    hintsFingers.hidden = mode !== "fingers";
+
+    // Update input aria-label
+    hiddenInput.ariaLabel = mode === "fingers" ? "Type the word shown above" : "Type what you hear";
+
+    // Repopulate level select with correct banks
+    populateLevelSelect();
+    loadWordBank(difficultySelect.value);
+  }
+
   // ---- Session Management ----
   function startSession() {
     state.stats = {
@@ -498,7 +676,9 @@ import { wordBanks } from "../data/wordBanks";
     btnRepeat.disabled = false;
     btnRestart.disabled = false;
     btnShowWord.disabled = false;
-    document.querySelector(".difficulty-select").disabled = true;
+    difficultySelect.disabled = true;
+    modeVoice.disabled = true;
+    modeFingers.disabled = true;
 
     loadWordBank(difficultySelect.value);
 
@@ -533,9 +713,12 @@ import { wordBanks } from "../data/wordBanks";
     btnRepeat.disabled = true;
     btnRestart.disabled = true;
     btnShowWord.disabled = true;
-    document.querySelector(".difficulty-select").disabled = false;
+    difficultySelect.disabled = false;
+    modeVoice.disabled = false;
+    modeFingers.disabled = false;
 
     speakIndicator.classList.remove("speaking");
+    wordReveal.hidden = true;
     speakLabel.textContent = "Session complete!";
 
     showSummary();
@@ -581,7 +764,9 @@ import { wordBanks } from "../data/wordBanks";
     btnRepeat.disabled = true;
     btnRestart.disabled = true;
     btnShowWord.disabled = true;
-    document.querySelector(".difficulty-select").disabled = false;
+    difficultySelect.disabled = false;
+    modeVoice.disabled = false;
+    modeFingers.disabled = false;
     speakLabel.textContent = "Press Start to begin";
     speakIndicator.classList.remove("speaking");
     hiddenInput.blur();
@@ -589,7 +774,8 @@ import { wordBanks } from "../data/wordBanks";
 
   // ---- Input Handling ----
   function handleInput(e) {
-    if (!state.isActive || state.isSpeaking) {
+    // In finger mode, allow typing even while speech is playing (word is visible)
+    if (!state.isActive || (state.isSpeaking && state.mode === "voice")) {
       e.preventDefault();
       return;
     }
@@ -675,6 +861,10 @@ import { wordBanks } from "../data/wordBanks";
   btnSummaryRestart.addEventListener("click", startSession);
   btnShowWord.addEventListener("click", toggleReveal);
 
+  // Mode toggle events
+  modeVoice.addEventListener("click", () => switchMode("voice"));
+  modeFingers.addEventListener("click", () => switchMode("fingers"));
+
   hiddenInput.addEventListener("input", handleInput);
   hiddenInput.addEventListener("keydown", handleKeyDown);
 
@@ -689,6 +879,10 @@ import { wordBanks } from "../data/wordBanks";
       loadWordBank(difficultySelect.value);
     }
   });
+
+  // Initialize mode UI
+  virtualKeyboard.hidden = true;
+  hintsFingers.hidden = true;
 
   // Load voices on init
   if (window.speechSynthesis) {
@@ -748,6 +942,43 @@ import { wordBanks } from "../data/wordBanks";
     display: flex;
     align-items: center;
     gap: 0.75rem;
+  }
+
+  .mode-toggle {
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .mode-btn:hover:not(:disabled) {
+    color: var(--text-secondary);
+  }
+
+  .mode-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .mode-btn.mode-active {
+    background: linear-gradient(135deg, var(--accent), #5a4bd1);
+    color: white;
   }
 
   .btn-ghost {
@@ -873,6 +1104,44 @@ import { wordBanks } from "../data/wordBanks";
     color: var(--accent-light);
   }
 
+  /* ---- Level Info ---- */
+  .level-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: rgba(108, 92, 231, 0.06);
+    border: 1px solid rgba(108, 92, 231, 0.15);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    width: 100%;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.6rem;
+    background: linear-gradient(135deg, var(--accent), #5a4bd1);
+    color: white;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+
+  .level-emoji {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .level-desc {
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
   /* ---- Stats Bar ---- */
   .stats-bar {
     display: flex;
@@ -910,6 +1179,67 @@ import { wordBanks } from "../data/wordBanks";
     width: 1px;
     height: 2rem;
     background: var(--border);
+  }
+
+  /* ---- Virtual Keyboard ---- */
+  .virtual-keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 480px;
+    animation: fadeIn 0.4s ease;
+    user-select: none;
+  }
+
+  .kb-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .kb-key {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .kb-key.kb-active {
+    background: rgba(108, 92, 231, 0.15);
+    color: var(--accent-light);
+    box-shadow: 0 0 8px rgba(108, 92, 231, 0.2);
+    border: 1px solid rgba(108, 92, 231, 0.3);
+  }
+
+  .kb-key.kb-inactive {
+    color: var(--text-muted);
+    opacity: 0.3;
+  }
+
+  .kb-spacer {
+    width: 18px;
+  }
+
+  .kb-spacer2 {
+    width: 40px;
+  }
+
+  .kb-hand-label {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
   }
 
   /* ---- Typing Display ---- */
